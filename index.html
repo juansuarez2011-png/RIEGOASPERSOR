@@ -135,9 +135,10 @@
       position: relative;
     }
     canvas {
+      display: block;
       width: 100%;
       height: auto;
-      display: block;
+      aspect-ratio: 4 / 3;
       background: #fafdfe;
       border: 4px solid #8aaec4;
       border-radius: 20px;
@@ -145,6 +146,8 @@
       cursor: crosshair;
       touch-action: none;
       max-width: 100%;
+      /* Forzamos un tamaño mínimo para que siempre se vea algo */
+      min-height: 200px;
     }
     #mensajeCanvas {
       position: absolute;
@@ -188,7 +191,7 @@
       .form-group input[type="number"] { width: 60px; flex: 0 1 60px; }
       .btn { padding: 0.4rem 0.8rem; }
       .stat-grid { grid-template-columns: 1fr 1fr; }
-      canvas { border-width: 3px; }
+      canvas { border-width: 3px; min-height: 150px; }
     }
     @media (max-width: 480px) {
       .header h1 { font-size: 1rem; }
@@ -200,9 +203,8 @@
       .form-group input, .form-group select { font-size: 0.7rem; padding: 0.2rem 0.4rem; border-width: 2px; }
       .stat-grid { grid-template-columns: 1fr; border-width: 2px; }
       .btn { font-size: 0.7rem; padding: 0.3rem 0.6rem; border-width: 2px; }
-      canvas { border-width: 3px; border-radius: 12px; }
+      canvas { border-width: 3px; border-radius: 12px; min-height: 120px; }
       .canvas-wrap { padding: 0.5rem; }
-      /* Margen inferior para evitar que el contenido quede oculto */
       .app { margin-bottom: 4rem; }
     }
   </style>
@@ -211,7 +213,7 @@
 <div class="app">
   <div class="header">
     <h1>🌿 <strong>WinSIP 3</strong> · Riego</h1>
-    <span class="badge">v3.4 · responsive móvil</span>
+    <span class="badge">v3.5 · GitHub Pages</span>
   </div>
   <div class="main">
     <!-- SIDEBAR -->
@@ -294,7 +296,7 @@
     <!-- CANVAS -->
     <div class="canvas-wrap">
       <div id="mensajeCanvas">⏳ Cargando diseño...</div>
-      <canvas id="canvasRiego"></canvas>
+      <canvas id="canvasRiego" width="800" height="600"></canvas>
       <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center; border-top: 2px solid #d5e2ec; padding-top: 0.5rem;">
         <button class="btn btn-sm btn-outline" id="btnZoomIn">➕ Zoom</button>
         <button class="btn btn-sm btn-outline" id="btnZoomOut">➖ Zoom</button>
@@ -364,45 +366,23 @@
       return { largo, ancho, margenX, margenY, separacion, radio, seplateral, patron };
     }
 
-    // ---- redimensionar canvas al contenedor ----
-    function resizeCanvas() {
-      const rect = wrap.getBoundingClientRect();
-      const padding = 0; // padding ya está en el wrap
-      const width = rect.width - 0; // sin margen extra, el canvas ocupa todo el ancho del wrap
-      // Calculamos la altura para mantener una relación de aspecto 4:3, pero sin sobrepasar la ventana
-      let height = width * 0.75; // 4:3
-      // Si la altura es mayor que la ventana visible, limitamos y ajustamos el ancho
-      const maxHeight = window.innerHeight * 0.6; // 60% de la altura de la ventana
-      if (height > maxHeight) {
-        height = maxHeight;
-        const newWidth = height / 0.75;
-        // No redimensionamos el canvas más allá del contenedor
-        // Simplemente ajustamos la altura y dejamos que el CSS escale el ancho
-        // pero para dibujar necesitamos un tamaño de píxel real
-        canvas.style.width = '100%';
-        canvas.style.height = height + 'px';
-        canvas.width = width;
-        canvas.height = height;
-      } else {
-        canvas.style.width = '100%';
-        canvas.style.height = 'auto';
-        canvas.width = width;
-        canvas.height = height;
-      }
-      console.log(`Canvas redimensionado a ${canvas.width}x${canvas.height}`);
-      // Redibujar después de cambiar el tamaño
-      dibujarCampo();
-    }
-
-    // ---- dibujo principal (adaptado al tamaño del canvas) ----
+    // ---- dibujo principal ----
     function dibujarCampo() {
       console.log('Dibujando campo...');
       const f = getFieldParams();
-      const w = canvas.width, h = canvas.height;
-      if (w === 0 || h === 0) {
-        console.warn('Canvas con dimensiones 0, omitiendo dibujo.');
+
+      // Asegurar que el canvas tiene dimensiones reales
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) {
+        console.warn('Canvas no visible, reintentando...');
+        setTimeout(dibujarCampo, 100);
         return;
       }
+
+      // Usamos las dimensiones del canvas (800x600) pero escalamos el dibujo
+      // para que se vea bien en cualquier tamaño.
+      const w = canvas.width;  // 800
+      const h = canvas.height; // 600
       const margin = 40;
       const scaleX = (w - 2 * margin) / f.largo;
       const scaleY = (h - 2 * margin) / f.ancho;
@@ -590,7 +570,7 @@
         mostrarMensaje('⚠️ Los márgenes son mayores que las dimensiones del campo. Redúzcalos.', 'error');
         state.aspersores = [];
         state.laterales = [];
-        resizeCanvas(); // redibuja con el mensaje
+        dibujarCampo();
         actualizarEstadisticas();
         return;
       }
@@ -598,7 +578,7 @@
         mostrarMensaje('⚠️ La separación y el radio deben ser mayores que cero.', 'error');
         state.aspersores = [];
         state.laterales = [];
-        resizeCanvas();
+        dibujarCampo();
         actualizarEstadisticas();
         return;
       }
@@ -642,7 +622,7 @@
       state.aspersores = aspersores;
       console.log(`Generados ${aspersores.length} aspersores.`);
       ocultarMensaje();
-      resizeCanvas(); // Esto redibuja
+      dibujarCampo();
       actualizarEstadisticas();
       calcularHidraulica();
     }
@@ -749,7 +729,7 @@
       document.getElementById('btnActualizarCampo').addEventListener('click', generarAspersores);
       document.getElementById('btnGenerarLaterales').addEventListener('click', generarAspersores);
       document.getElementById('btnRedibujar').addEventListener('click', function() {
-        resizeCanvas();
+        dibujarCampo();
         mostrarMensaje('🔄 Redibujado manual', 'info');
         setTimeout(ocultarMensaje, 1500);
       });
@@ -757,7 +737,7 @@
       document.getElementById('btnCalcularHidraulica').addEventListener('click', calcularHidraulica);
       document.getElementById('btnCalcularUniformidad').addEventListener('click', function() {
         actualizarEstadisticas();
-        resizeCanvas(); // redibuja
+        dibujarCampo();
       });
       document.getElementById('btnCalcularProgramacion').addEventListener('click', calcularProgramacion);
       document.getElementById('btnExportarReporte').addEventListener('click', generarReporte);
@@ -765,11 +745,11 @@
       // Zoom
       document.getElementById('btnZoomIn').addEventListener('click', function() {
         state.zoom = Math.min(2, state.zoom * 1.2);
-        resizeCanvas(); // redibuja con nuevo zoom
+        dibujarCampo();
       });
       document.getElementById('btnZoomOut').addEventListener('click', function() {
         state.zoom = Math.max(0.5, state.zoom / 1.2);
-        resizeCanvas();
+        dibujarCampo();
       });
 
       // Agregar equipo
@@ -792,33 +772,12 @@
         sel.value = id;
       });
 
-      // Redibujar al cambiar tamaño (con debounce)
-      let resizeTimer;
-      window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-          console.log('Resize detectado, redibujando...');
-          resizeCanvas();
-        }, 200);
-      });
-
-      // Observador de cambios en el contenedor (para cuando el sidebar se colapsa)
-      if (window.ResizeObserver) {
-        const ro = new ResizeObserver(() => {
-          clearTimeout(resizeTimer);
-          resizeTimer = setTimeout(() => {
-            console.log('ResizeObserver: redibujando...');
-            resizeCanvas();
-          }, 200);
-        });
-        ro.observe(wrap);
-      }
-
-      // Inicializar: mostrar mensaje y generar
+      // Inicializar
       mostrarMensaje('⏳ Generando diseño inicial...', 'info');
+      // Esperar un momento para que el canvas se pinte
       setTimeout(() => {
         generarAspersores();
-      }, 200);
+      }, 300);
     });
   })();
 </script>
