@@ -25,7 +25,24 @@
       display: flex;
       flex-direction: column;
       border: 2px solid #a0b8c8;
+      transition: all 0.3s ease;
     }
+    /* Modo diseño completo: oculta el sidebar y expande el canvas */
+    .app.diseno-completo .sidebar { display: none; }
+    .app.diseno-completo .canvas-wrap {
+      flex: 1 1 100%;
+      border-left: none;
+      padding: 0.5rem;
+    }
+    .app.diseno-completo .canvas-wrap canvas {
+      aspect-ratio: auto;
+      height: 92vh; /* Ocupa casi toda la pantalla */
+      width: 100%;
+      border-width: 4px;
+    }
+    .app.diseno-completo .header .badge { background: #e67e22; }
+    .app.diseno-completo .footer { display: none; }
+
     .header {
       background: #0b2b3f;
       color: white;
@@ -36,6 +53,7 @@
       flex-wrap: wrap;
       gap: 0.5rem;
       border-bottom: 4px solid #4e8aa8;
+      transition: all 0.3s ease;
     }
     .header h1 { font-weight: 400; font-size: clamp(1.2rem, 4vw, 1.8rem); display: flex; align-items: center; gap: 0.4rem; }
     .header h1 strong { font-weight: 600; color: #9fc7e0; }
@@ -49,6 +67,7 @@
       padding: 1rem 0.8rem;
       max-height: 800px;
       overflow-y: auto;
+      transition: display 0.3s ease;
     }
     .tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; border-bottom: 3px solid #b0c8d6; padding-bottom: 0.6rem; }
     .tab-btn {
@@ -103,6 +122,9 @@
     .btn-sm { padding: 0.2rem 0.8rem; font-size: clamp(0.65rem, 1vw, 0.75rem); }
     .btn-outline { background: transparent; border: 2px solid #1d5f7a; color: #1d5f7a; }
     .btn-outline:hover { background: #1d5f7a; color: white; }
+    .btn-fullscreen { background: #e67e22; border-color: #e67e22; }
+    .btn-fullscreen:hover { background: #d35400; border-color: #d35400; }
+    .btn-fullscreen.active { background: #c0392b; border-color: #c0392b; }
     .stat-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -133,6 +155,7 @@
       min-width: 280px;
       border-left: 3px solid #b0c8d6;
       position: relative;
+      transition: all 0.3s ease;
     }
     canvas {
       display: block;
@@ -191,6 +214,11 @@
       .btn { padding: 0.4rem 0.8rem; }
       .stat-grid { grid-template-columns: 1fr 1fr; }
       canvas { border-width: 3px; min-height: 150px; }
+      /* Modo diseño completo en móvil */
+      .app.diseno-completo .canvas-wrap canvas {
+        height: 85vh;
+        aspect-ratio: auto;
+      }
     }
     @media (max-width: 480px) {
       .header h1 { font-size: 1rem; }
@@ -205,18 +233,21 @@
       canvas { border-width: 3px; border-radius: 12px; min-height: 120px; }
       .canvas-wrap { padding: 0.5rem; }
       .app { margin-bottom: 4rem; }
+      .app.diseno-completo .canvas-wrap canvas {
+        height: 80vh;
+      }
     }
   </style>
 </head>
 <body>
-<div class="app">
+<div class="app" id="app">
   <div class="header">
     <h1>🌿 <strong>WinSIP 3</strong> · Riego</h1>
-    <span class="badge">v3.6 · un botón</span>
+    <span class="badge">v3.7 · modo diseño</span>
   </div>
   <div class="main">
     <!-- SIDEBAR -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
       <div class="tabs">
         <button class="tab-btn active" data-tab="tab-diseno">📐 Diseño</button>
         <button class="tab-btn" data-tab="tab-equipos">🔧 Equipos</button>
@@ -290,7 +321,7 @@
       </div>
     </div>
     <!-- CANVAS -->
-    <div class="canvas-wrap">
+    <div class="canvas-wrap" id="canvasWrap">
       <div id="mensajeCanvas">⏳ Cargando diseño...</div>
       <canvas id="canvasRiego" width="800" height="600"></canvas>
       <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center; border-top: 2px solid #d5e2ec; padding-top: 0.5rem;">
@@ -298,6 +329,8 @@
         <button class="btn btn-sm btn-outline" id="btnZoomOut">➖ Zoom</button>
         <button class="btn btn-sm btn-outline" id="btnRedibujar">🔄 Forzar redibujo</button>
         <button class="btn btn-sm btn-outline" id="btnExportarReporte">📄 Reporte</button>
+        <!-- BOTÓN PARA VER SOLO DISEÑO -->
+        <button class="btn btn-sm btn-fullscreen" id="btnToggleDiseno">👁️ Ver solo diseño</button>
         <span style="font-size:clamp(0.6rem,0.9vw,0.75rem); color:#1f4b62; margin-left:auto;">Toca o arrastra para explorar</span>
       </div>
     </div>
@@ -324,12 +357,15 @@
         { id: 'Nelson-40', q: 3.2, presion: 3.5, radio: 14 }
       ],
       zoom: 1,
-      unidadCaudal: 'm3h'
+      unidadCaudal: 'm3h',
+      modoDiseno: false
     };
 
     const canvas = document.getElementById('canvasRiego');
     const ctx = canvas.getContext('2d');
     const mensajeEl = document.getElementById('mensajeCanvas');
+    const app = document.getElementById('app');
+    const btnToggle = document.getElementById('btnToggleDiseno');
 
     // ---- funciones de mensaje ----
     function mostrarMensaje(texto, tipo) {
@@ -695,6 +731,23 @@
       console.log(txt);
     }
 
+    // ---- TOGGLE MODO DISEÑO (solo el dibujo) ----
+    function toggleModoDiseno() {
+      state.modoDiseno = !state.modoDiseno;
+      if (state.modoDiseno) {
+        app.classList.add('diseno-completo');
+        btnToggle.textContent = '✖️ Cerrar vista';
+        btnToggle.classList.add('active');
+        // Redibujamos para que el canvas se adapte al nuevo tamaño
+        setTimeout(dibujarCampo, 100);
+      } else {
+        app.classList.remove('diseno-completo');
+        btnToggle.textContent = '👁️ Ver solo diseño';
+        btnToggle.classList.remove('active');
+        setTimeout(dibujarCampo, 100);
+      }
+    }
+
     // ---- eventos ----
     document.addEventListener('DOMContentLoaded', function() {
       console.log('DOM cargado.');
@@ -709,8 +762,11 @@
         });
       });
 
-      // --- UN SOLO BOTÓN PARA DISEÑO ---
+      // Botón Generar diseño
       document.getElementById('btnGenerarDiseno').addEventListener('click', generarAspersores);
+
+      // Botón toggle modo diseño
+      document.getElementById('btnToggleDiseno').addEventListener('click', toggleModoDiseno);
 
       // Botones auxiliares
       document.getElementById('btnRedibujar').addEventListener('click', function() {
