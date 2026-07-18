@@ -137,7 +137,7 @@
     canvas {
       width: 100%;
       height: auto;
-      aspect-ratio: 4 / 3;
+      display: block;
       background: #fafdfe;
       border: 4px solid #8aaec4;
       border-radius: 20px;
@@ -145,7 +145,6 @@
       cursor: crosshair;
       touch-action: none;
       max-width: 100%;
-      display: block;
     }
     #mensajeCanvas {
       position: absolute;
@@ -203,6 +202,8 @@
       .btn { font-size: 0.7rem; padding: 0.3rem 0.6rem; border-width: 2px; }
       canvas { border-width: 3px; border-radius: 12px; }
       .canvas-wrap { padding: 0.5rem; }
+      /* Margen inferior para evitar que el contenido quede oculto */
+      .app { margin-bottom: 4rem; }
     }
   </style>
 </head>
@@ -210,7 +211,7 @@
 <div class="app">
   <div class="header">
     <h1>🌿 <strong>WinSIP 3</strong> · Riego</h1>
-    <span class="badge">v3.3 · laterales visibles</span>
+    <span class="badge">v3.4 · responsive móvil</span>
   </div>
   <div class="main">
     <!-- SIDEBAR -->
@@ -293,7 +294,7 @@
     <!-- CANVAS -->
     <div class="canvas-wrap">
       <div id="mensajeCanvas">⏳ Cargando diseño...</div>
-      <canvas id="canvasRiego" width="800" height="600"></canvas>
+      <canvas id="canvasRiego"></canvas>
       <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center; border-top: 2px solid #d5e2ec; padding-top: 0.5rem;">
         <button class="btn btn-sm btn-outline" id="btnZoomIn">➕ Zoom</button>
         <button class="btn btn-sm btn-outline" id="btnZoomOut">➖ Zoom</button>
@@ -331,6 +332,7 @@
     const canvas = document.getElementById('canvasRiego');
     const ctx = canvas.getContext('2d');
     const mensajeEl = document.getElementById('mensajeCanvas');
+    const wrap = canvas.parentElement;
 
     // ---- funciones de mensaje ----
     function mostrarMensaje(texto, tipo) {
@@ -362,11 +364,45 @@
       return { largo, ancho, margenX, margenY, separacion, radio, seplateral, patron };
     }
 
-    // ---- dibujo principal ----
+    // ---- redimensionar canvas al contenedor ----
+    function resizeCanvas() {
+      const rect = wrap.getBoundingClientRect();
+      const padding = 0; // padding ya está en el wrap
+      const width = rect.width - 0; // sin margen extra, el canvas ocupa todo el ancho del wrap
+      // Calculamos la altura para mantener una relación de aspecto 4:3, pero sin sobrepasar la ventana
+      let height = width * 0.75; // 4:3
+      // Si la altura es mayor que la ventana visible, limitamos y ajustamos el ancho
+      const maxHeight = window.innerHeight * 0.6; // 60% de la altura de la ventana
+      if (height > maxHeight) {
+        height = maxHeight;
+        const newWidth = height / 0.75;
+        // No redimensionamos el canvas más allá del contenedor
+        // Simplemente ajustamos la altura y dejamos que el CSS escale el ancho
+        // pero para dibujar necesitamos un tamaño de píxel real
+        canvas.style.width = '100%';
+        canvas.style.height = height + 'px';
+        canvas.width = width;
+        canvas.height = height;
+      } else {
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
+        canvas.width = width;
+        canvas.height = height;
+      }
+      console.log(`Canvas redimensionado a ${canvas.width}x${canvas.height}`);
+      // Redibujar después de cambiar el tamaño
+      dibujarCampo();
+    }
+
+    // ---- dibujo principal (adaptado al tamaño del canvas) ----
     function dibujarCampo() {
       console.log('Dibujando campo...');
       const f = getFieldParams();
       const w = canvas.width, h = canvas.height;
+      if (w === 0 || h === 0) {
+        console.warn('Canvas con dimensiones 0, omitiendo dibujo.');
+        return;
+      }
       const margin = 40;
       const scaleX = (w - 2 * margin) / f.largo;
       const scaleY = (h - 2 * margin) / f.ancho;
@@ -554,7 +590,7 @@
         mostrarMensaje('⚠️ Los márgenes son mayores que las dimensiones del campo. Redúzcalos.', 'error');
         state.aspersores = [];
         state.laterales = [];
-        dibujarCampo();
+        resizeCanvas(); // redibuja con el mensaje
         actualizarEstadisticas();
         return;
       }
@@ -562,7 +598,7 @@
         mostrarMensaje('⚠️ La separación y el radio deben ser mayores que cero.', 'error');
         state.aspersores = [];
         state.laterales = [];
-        dibujarCampo();
+        resizeCanvas();
         actualizarEstadisticas();
         return;
       }
@@ -606,7 +642,7 @@
       state.aspersores = aspersores;
       console.log(`Generados ${aspersores.length} aspersores.`);
       ocultarMensaje();
-      dibujarCampo();
+      resizeCanvas(); // Esto redibuja
       actualizarEstadisticas();
       calcularHidraulica();
     }
@@ -713,7 +749,7 @@
       document.getElementById('btnActualizarCampo').addEventListener('click', generarAspersores);
       document.getElementById('btnGenerarLaterales').addEventListener('click', generarAspersores);
       document.getElementById('btnRedibujar').addEventListener('click', function() {
-        dibujarCampo();
+        resizeCanvas();
         mostrarMensaje('🔄 Redibujado manual', 'info');
         setTimeout(ocultarMensaje, 1500);
       });
@@ -721,7 +757,7 @@
       document.getElementById('btnCalcularHidraulica').addEventListener('click', calcularHidraulica);
       document.getElementById('btnCalcularUniformidad').addEventListener('click', function() {
         actualizarEstadisticas();
-        dibujarCampo();
+        resizeCanvas(); // redibuja
       });
       document.getElementById('btnCalcularProgramacion').addEventListener('click', calcularProgramacion);
       document.getElementById('btnExportarReporte').addEventListener('click', generarReporte);
@@ -729,11 +765,11 @@
       // Zoom
       document.getElementById('btnZoomIn').addEventListener('click', function() {
         state.zoom = Math.min(2, state.zoom * 1.2);
-        dibujarCampo();
+        resizeCanvas(); // redibuja con nuevo zoom
       });
       document.getElementById('btnZoomOut').addEventListener('click', function() {
         state.zoom = Math.max(0.5, state.zoom / 1.2);
-        dibujarCampo();
+        resizeCanvas();
       });
 
       // Agregar equipo
@@ -756,21 +792,33 @@
         sel.value = id;
       });
 
-      // Redibujar al cambiar tamaño
+      // Redibujar al cambiar tamaño (con debounce)
       let resizeTimer;
       window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
           console.log('Resize detectado, redibujando...');
-          dibujarCampo();
-        }, 300);
+          resizeCanvas();
+        }, 200);
       });
 
-      // Inicializar
+      // Observador de cambios en el contenedor (para cuando el sidebar se colapsa)
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(() => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            console.log('ResizeObserver: redibujando...');
+            resizeCanvas();
+          }, 200);
+        });
+        ro.observe(wrap);
+      }
+
+      // Inicializar: mostrar mensaje y generar
       mostrarMensaje('⏳ Generando diseño inicial...', 'info');
       setTimeout(() => {
         generarAspersores();
-      }, 100);
+      }, 200);
     });
   })();
 </script>
