@@ -146,7 +146,6 @@
       cursor: crosshair;
       touch-action: none;
       max-width: 100%;
-      /* Forzamos un tamaño mínimo para que siempre se vea algo */
       min-height: 200px;
     }
     #mensajeCanvas {
@@ -213,7 +212,7 @@
 <div class="app">
   <div class="header">
     <h1>🌿 <strong>WinSIP 3</strong> · Riego</h1>
-    <span class="badge">v3.5 · GitHub Pages</span>
+    <span class="badge">v3.6 · un botón</span>
   </div>
   <div class="main">
     <!-- SIDEBAR -->
@@ -225,7 +224,7 @@
         <button class="tab-btn" data-tab="tab-uniformidad">📊 Uniformidad</button>
         <button class="tab-btn" data-tab="tab-programacion">⏳ Programación</button>
       </div>
-      <!-- PANEL DISEÑO -->
+      <!-- PANEL DISEÑO (simplificado) -->
       <div id="tab-diseno" class="panel active">
         <h4>📏 Campo y disposición</h4>
         <div class="form-group"><label>Largo (m)</label><input type="number" id="fieldLargo" value="800" step="1" min="10"></div>
@@ -242,12 +241,9 @@
         <div class="form-group"><label>Sep. aspersores (m)</label><input type="number" id="sepAspersor" value="33.5" step="0.5" min="0.5"></div>
         <div class="form-group"><label>Sep. laterales (m)</label><input type="number" id="seplateral" value="33.5" step="0.5" min="0.5"></div>
         <div class="form-group"><label>Radio (m)</label><input type="number" id="radioAspersor" value="20.5" step="0.5" min="0.5"></div>
-        <button class="btn" id="btnActualizarCampo">🔄 Actualizar campo</button>
-        <hr style="margin:0.8rem 0; border-color:#cbdbe6;">
-        <h4>📌 Laterales</h4>
         <div class="form-group"><label>N° laterales</label><input type="number" id="numLaterales" value="3" step="1" min="1"></div>
-        <button class="btn btn-sm" id="btnGenerarLaterales">Generar laterales</button>
-        <div style="font-size:clamp(0.6rem, 1vw, 0.75rem); color:#1f4b62; margin-top:4px;">Ubicación automática equidistante</div>
+        <button class="btn" id="btnGenerarDiseno">📐 Generar diseño</button>
+        <div style="font-size:clamp(0.6rem, 1vw, 0.75rem); color:#1f4b62; margin-top:4px;">Actualiza campo, laterales y aspersores.</div>
       </div>
       <!-- PANEL EQUIPOS -->
       <div id="tab-equipos" class="panel">
@@ -334,7 +330,6 @@
     const canvas = document.getElementById('canvasRiego');
     const ctx = canvas.getContext('2d');
     const mensajeEl = document.getElementById('mensajeCanvas');
-    const wrap = canvas.parentElement;
 
     // ---- funciones de mensaje ----
     function mostrarMensaje(texto, tipo) {
@@ -370,19 +365,8 @@
     function dibujarCampo() {
       console.log('Dibujando campo...');
       const f = getFieldParams();
-
-      // Asegurar que el canvas tiene dimensiones reales
-      const rect = canvas.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) {
-        console.warn('Canvas no visible, reintentando...');
-        setTimeout(dibujarCampo, 100);
-        return;
-      }
-
-      // Usamos las dimensiones del canvas (800x600) pero escalamos el dibujo
-      // para que se vea bien en cualquier tamaño.
-      const w = canvas.width;  // 800
-      const h = canvas.height; // 600
+      const w = canvas.width;
+      const h = canvas.height;
       const margin = 40;
       const scaleX = (w - 2 * margin) / f.largo;
       const scaleY = (h - 2 * margin) / f.ancho;
@@ -725,9 +709,10 @@
         });
       });
 
-      // Botones principales
-      document.getElementById('btnActualizarCampo').addEventListener('click', generarAspersores);
-      document.getElementById('btnGenerarLaterales').addEventListener('click', generarAspersores);
+      // --- UN SOLO BOTÓN PARA DISEÑO ---
+      document.getElementById('btnGenerarDiseno').addEventListener('click', generarAspersores);
+
+      // Botones auxiliares
       document.getElementById('btnRedibujar').addEventListener('click', function() {
         dibujarCampo();
         mostrarMensaje('🔄 Redibujado manual', 'info');
@@ -774,7 +759,6 @@
 
       // Inicializar
       mostrarMensaje('⏳ Generando diseño inicial...', 'info');
-      // Esperar un momento para que el canvas se pinte
       setTimeout(() => {
         generarAspersores();
       }, 300);
