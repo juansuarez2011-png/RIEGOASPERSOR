@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>WinSIP 3 · Diseño de Riego Profesional</title>
+  <title>WinSIP 3 · Diseño de Riego con Laterales</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -20,7 +20,7 @@
       width: 100%;
       background: #ffffff;
       border-radius: 32px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -36,7 +36,7 @@
       flex-wrap: wrap;
       gap: 0.5rem;
       border-bottom: 4px solid #4e8aa8;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     .header h1 {
       font-weight: 400;
@@ -53,7 +53,6 @@
       border-radius: 30px;
       font-size: clamp(0.65rem, 1.5vw, 0.85rem);
       border: 2px solid #5f8ca8;
-      box-shadow: inset 0 1px 3px rgba(255,255,255,0.05);
     }
     .main {
       display: flex;
@@ -67,9 +66,8 @@
       background: #f5f9fc;
       border-right: 3px solid #b0c8d6;
       padding: 1rem 0.8rem;
-      max-height: 85vh;
-      overflow-y: auto;
-      box-shadow: inset -2px 0 8px rgba(0, 0, 0, 0.03);
+      /* Eliminamos max-height y overflow para que el scroll sea global */
+      box-shadow: inset -2px 0 8px rgba(0,0,0,0.03);
     }
     .tabs {
       display: flex;
@@ -82,21 +80,20 @@
     .tab-btn {
       background: transparent;
       border: 2px solid transparent;
-      padding: 0.5rem 0.8rem;
+      padding: 0.4rem 0.8rem;
       border-radius: 30px;
       font-weight: 500;
       color: #1f4b62;
       cursor: pointer;
       transition: 0.15s;
-      font-size: clamp(0.75rem, 1.4vw, 0.85rem);
+      font-size: clamp(0.7rem, 1.4vw, 0.85rem);
       touch-action: manipulation;
-      min-height: 44px;
     }
     .tab-btn.active {
       background: #0b2b3f;
       color: white;
       border-color: #0b2b3f;
-      box-shadow: 0 2px 8px rgba(11, 43, 63, 0.3);
+      box-shadow: 0 2px 8px rgba(11,43,63,0.3);
     }
     .tab-btn:hover {
       background: #d3e2ed;
@@ -108,7 +105,7 @@
       border-radius: 16px;
       padding: 0.8rem;
       background: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), inset 0 1px 4px rgba(255,255,255,0.6);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       margin-bottom: 0.5rem;
     }
     .panel.active { display: block; }
@@ -131,27 +128,25 @@
     }
     .form-group label {
       min-width: 75px;
-      font-size: clamp(0.75rem, 1.2vw, 0.82rem);
+      font-size: clamp(0.7rem, 1.2vw, 0.82rem);
       color: #1f3f4f;
       font-weight: 500;
     }
     .form-group input,
     .form-group select {
-      padding: 0.4rem 0.5rem;
+      padding: 0.3rem 0.5rem;
       border: 2px solid #b9cfdd;
       border-radius: 10px;
       background: white;
-      font-size: clamp(0.8rem, 1.2vw, 0.85rem);
+      font-size: clamp(0.75rem, 1.2vw, 0.85rem);
       flex: 1;
-      min-width: 60px;
+      min-width: 50px;
       transition: 0.15s;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
-      min-height: 44px;
     }
     .form-group input:focus,
     .form-group select:focus {
       border-color: #1d5f7a;
-      box-shadow: 0 0 0 3px rgba(29, 95, 122, 0.2);
+      box-shadow: 0 0 0 3px rgba(29,95,122,0.2);
       outline: none;
     }
     .form-group input[type="number"] {
@@ -162,27 +157,25 @@
       background: #1d5f7a;
       border: 2px solid #1d5f7a;
       color: white;
-      padding: 0.5rem 1.2rem;
+      padding: 0.4rem 1.2rem;
       border-radius: 30px;
       font-weight: 500;
-      font-size: clamp(0.75rem, 1.2vw, 0.85rem);
+      font-size: clamp(0.7rem, 1.2vw, 0.85rem);
       cursor: pointer;
       transition: 0.15s;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
       touch-action: manipulation;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
       gap: 0.3rem;
-      min-height: 44px;
     }
     .btn:hover {
       background: #144a61;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     .btn:active { transform: translateY(0px); }
-    .btn-sm { padding: 0.3rem 0.8rem; font-size: clamp(0.7rem, 1vw, 0.75rem); min-height: 38px; }
+    .btn-sm { padding: 0.2rem 0.8rem; font-size: clamp(0.65rem, 1vw, 0.75rem); }
     .btn-outline {
       background: transparent;
       border: 2px solid #1d5f7a;
@@ -198,10 +191,9 @@
       border-radius: 14px;
       border: 2px solid #b8cedc;
       margin: 0.5rem 0;
-      box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
     }
     .stat-item {
-      font-size: clamp(0.75rem, 1.1vw, 0.8rem);
+      font-size: clamp(0.7rem, 1.1vw, 0.8rem);
       display: flex;
       justify-content: space-between;
       border-bottom: 1px dashed #b0c8d6;
@@ -213,32 +205,9 @@
       border-radius: 14px;
       padding: 0.6rem;
       margin-top: 0.5rem;
-      font-size: clamp(0.75rem, 1.1vw, 0.8rem);
+      font-size: clamp(0.7rem, 1.1vw, 0.8rem);
       border: 2px solid #b0c8d6;
-      box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
       line-height: 1.5;
-    }
-    .unidad-selector {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 0.3rem 0;
-      flex-wrap: wrap;
-      padding: 0.2rem 0;
-      border-bottom: 1px dashed #d5e2ec;
-    }
-    .unidad-selector label {
-      font-size: clamp(0.75rem, 1.2vw, 0.82rem);
-      font-weight: 500;
-      color: #1f3f4f;
-    }
-    .unidad-selector select {
-      padding: 0.3rem 0.5rem;
-      border-radius: 10px;
-      border: 2px solid #b9cfdd;
-      font-size: clamp(0.75rem, 1.2vw, 0.82rem);
-      background: white;
-      min-height: 44px;
     }
     .canvas-wrap {
       flex: 2 1 500px;
@@ -252,20 +221,22 @@
     canvas {
       width: 100%;
       height: auto;
-      aspect-ratio: 4 / 3;
+      /* quitamos aspect-ratio fijo para que se adapte al ancho */
       background: #fafdfe;
       border: 4px solid #8aaec4;
       border-radius: 20px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 2px 6px rgba(0,0,0,0.02);
-      cursor: crosshair;
-      touch-action: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      /* Permitir gestos táctiles (scroll, zoom) */
+      touch-action: auto;
       max-width: 100%;
       display: block;
+      /* altura automática según el ancho, manteniendo proporción 4:3 */
+      aspect-ratio: 4 / 3;
     }
     .footer {
       background: #f0f5f9;
       padding: 0.6rem 1.5rem;
-      font-size: clamp(0.65rem, 1vw, 0.75rem);
+      font-size: clamp(0.6rem, 1vw, 0.75rem);
       color: #1e475c;
       border-top: 3px solid #b0c8d6;
       display: flex;
@@ -273,19 +244,21 @@
       flex-wrap: wrap;
       gap: 0.3rem;
     }
-    .sidebar::-webkit-scrollbar { width: 6px; }
+    /* Scroll del sidebar solo en desktop si es necesario, pero ahora lo dejamos sin scroll */
+    .sidebar::-webkit-scrollbar { width: 5px; }
     .sidebar::-webkit-scrollbar-track { background: #dde7ef; border-radius: 10px; }
     .sidebar::-webkit-scrollbar-thumb { background: #8aaec4; border-radius: 10px; border: 1px solid #6f8fa0; }
-    
+
     @media (max-width: 820px) {
       body { padding: 0.5rem; }
       .app { border-radius: 20px; border-width: 2px; }
       .sidebar {
         border-right: none;
         border-bottom: 3px solid #b0c8d6;
-        max-height: 50vh;
         padding: 0.8rem;
         flex: 1 1 100%;
+        max-height: none; /* eliminamos límite */
+        overflow: visible;
       }
       .canvas-wrap {
         border-left: none;
@@ -297,23 +270,22 @@
       .main { flex-direction: column; }
       .form-group label { min-width: 60px; }
       .form-group input[type="number"] { width: 60px; flex: 0 1 60px; }
+      .btn { padding: 0.4rem 0.8rem; }
       .stat-grid { grid-template-columns: 1fr 1fr; }
-      canvas { border-width: 3px; min-height: 300px; }
+      canvas { border-width: 3px; }
     }
-    
     @media (max-width: 480px) {
       .header h1 { font-size: 1rem; }
       .header .badge { font-size: 0.6rem; padding: 0.2rem 0.6rem; }
-      .tab-btn { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
+      .tab-btn { padding: 0.3rem 0.6rem; font-size: 0.7rem; }
       .panel { padding: 0.5rem; border-width: 2px; }
       .form-group { gap: 0.1rem 0.3rem; border-bottom: 1px solid #e0eaf0; }
-      .form-group label { min-width: 50px; font-size: 0.75rem; }
-      .form-group input, .form-group select { font-size: 0.8rem; padding: 0.3rem 0.4rem; border-width: 2px; }
+      .form-group label { min-width: 50px; font-size: 0.7rem; }
+      .form-group input, .form-group select { font-size: 0.7rem; padding: 0.2rem 0.4rem; border-width: 2px; }
       .stat-grid { grid-template-columns: 1fr; border-width: 2px; }
-      .btn { font-size: 0.8rem; padding: 0.4rem 0.8rem; border-width: 2px; }
-      canvas { border-width: 3px; border-radius: 12px; min-height: 250px; }
+      .btn { font-size: 0.7rem; padding: 0.3rem 0.6rem; border-width: 2px; }
+      canvas { border-width: 3px; border-radius: 12px; }
       .canvas-wrap { padding: 0.5rem; }
-      .footer { flex-direction: column; text-align: center; }
     }
   </style>
 </head>
@@ -321,7 +293,7 @@
 <div class="app">
   <div class="header">
     <h1>🌿 <strong>WinSIP 3</strong> · Riego</h1>
-    <span class="badge">v3.1 · Visualización mejorada</span>
+    <span class="badge">v3.2 · laterales visibles</span>
   </div>
   <div class="main">
     <!-- SIDEBAR -->
@@ -336,8 +308,8 @@
       <!-- PANEL DISEÑO -->
       <div id="tab-diseno" class="panel active">
         <h4>📏 Campo y disposición</h4>
-        <div class="form-group"><label>Largo (m)</label><input type="number" id="fieldLargo" value="800" step="1"></div>
-        <div class="form-group"><label>Ancho (m)</label><input type="number" id="fieldAncho" value="342" step="1"></div>
+        <div class="form-group"><label>Largo (m)</label><input type="number" id="fieldLargo" value="800" step="1" min="1"></div>
+        <div class="form-group"><label>Ancho (m)</label><input type="number" id="fieldAncho" value="342" step="1" min="1"></div>
         <div class="form-group"><label>Margen X (m)</label><input type="number" id="fieldMargenX" value="20" step="0.5" min="0"></div>
         <div class="form-group"><label>Margen Y (m)</label><input type="number" id="fieldMargenY" value="20" step="0.5" min="0"></div>
         <div class="form-group"><label>Patrón</label>
@@ -347,44 +319,36 @@
             <option value="cuadrado" selected>Cuadrado</option>
           </select>
         </div>
-        <div class="form-group"><label>Sep. aspersores (m)</label><input type="number" id="sepAspersor" value="33.5" step="0.5"></div>
-        <div class="form-group"><label>Sep. laterales (m)</label><input type="number" id="seplateral" value="33.5" step="0.5"></div>
-        <div class="form-group"><label>Diámetro (m)</label><input type="number" id="diametroAspersor" value="40" step="0.5" min="1"></div>
+        <div class="form-group"><label>Sep. aspersores (m)</label><input type="number" id="sepAspersor" value="33.5" step="0.5" min="0.1"></div>
+        <div class="form-group"><label>Sep. laterales (m)</label><input type="number" id="seplateral" value="33.5" step="0.5" min="0.1"></div>
+        <div class="form-group"><label>Radio (m)</label><input type="number" id="radioAspersor" value="20.5" step="0.5" min="0.1"></div>
         <button class="btn" id="btnActualizarCampo">🔄 Actualizar campo</button>
         <hr style="margin:0.8rem 0; border-color:#cbdbe6;">
         <h4>📌 Laterales</h4>
-        <div class="form-group"><label>N° laterales</label><input type="number" id="numLaterales" value="24" step="1" min="1"></div>
+        <div class="form-group"><label>N° laterales</label><input type="number" id="numLaterales" value="5" step="1" min="1"></div>
         <button class="btn btn-sm" id="btnGenerarLaterales">Generar laterales</button>
-        <div style="font-size:clamp(0.65rem, 1vw, 0.75rem); color:#1f4b62; margin-top:4px;">Ubicación automática equidistante</div>
+        <div style="font-size:clamp(0.6rem, 1vw, 0.75rem); color:#1f4b62; margin-top:4px;">Ubicación automática equidistante</div>
       </div>
       <!-- PANEL EQUIPOS -->
       <div id="tab-equipos" class="panel">
         <h4>📦 Catálogo</h4>
-        <select id="catalogoEquipos" style="width:100%; padding:0.4rem; border-radius:10px; border:2px solid #b9cfdd; font-size:clamp(0.75rem,1.2vw,0.85rem); min-height:44px;">
-          <option value="RainBird-30">RainBird 30 · Q=2.5 m³/h · P=3.0 bar · D=12m</option>
-          <option value="Hunter-20">Hunter 20 · Q=1.8 m³/h · P=2.8 bar · D=10m</option>
-          <option value="Nelson-40">Nelson 40 · Q=3.2 m³/h · P=3.5 bar · D=14m</option>
+        <select id="catalogoEquipos" style="width:100%; padding:0.4rem; border-radius:10px; border:2px solid #b9cfdd; font-size:clamp(0.7rem,1.2vw,0.85rem);">
+          <option value="RainBird-30">RainBird 30 · Q=2.5 m³/h · P=3.0 bar · R=12m</option>
+          <option value="Hunter-20">Hunter 20 · Q=1.8 m³/h · P=2.8 bar · R=10m</option>
+          <option value="Nelson-40">Nelson 40 · Q=3.2 m³/h · P=3.5 bar · R=14m</option>
         </select>
-        <div class="unidad-selector">
-          <label>Unidad caudal:</label>
-          <select id="unidadCaudal">
-            <option value="m3h">m³/h</option>
-            <option value="lps">l/s</option>
-            <option value="gpm">gpm</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Q</label><input type="number" id="eqCaudal" value="2.5" step="0.1"></div>
-        <div class="form-group"><label>P (bar)</label><input type="number" id="eqPresion" value="3.0" step="0.1"></div>
-        <div class="form-group"><label>Diámetro (m)</label><input type="number" id="eqDiametro" value="12" step="0.5"></div>
+        <div class="form-group"><label>Q (m³/h)</label><input type="number" id="eqCaudal" value="2.5" step="0.1" min="0.1"></div>
+        <div class="form-group"><label>P (bar)</label><input type="number" id="eqPresion" value="3.0" step="0.1" min="0.1"></div>
+        <div class="form-group"><label>Radio (m)</label><input type="number" id="eqRadio" value="12" step="0.5" min="0.1"></div>
         <button class="btn btn-sm btn-outline" id="btnAgregarEquipo">➕ Agregar equipo</button>
-        <div style="font-size:clamp(0.65rem,0.9vw,0.7rem); color:#3b6179; margin-top:0.3rem;">Equipos personalizados guardados en sesión.</div>
+        <div style="font-size:clamp(0.6rem,0.9vw,0.7rem); color:#3b6179; margin-top:0.3rem;">Equipos personalizados guardados en sesión.</div>
       </div>
       <!-- PANEL HIDRÁULICA -->
       <div id="tab-hidraulica" class="panel">
         <h4>🔧 Pérdidas (Hazen-Williams)</h4>
-        <div class="form-group"><label>CHW</label><input type="number" id="chw" value="140" step="1"></div>
-        <div class="form-group"><label>Diámetro tubería (mm)</label><input type="number" id="diametroTubo" value="50" step="1"></div>
-        <div class="form-group"><label>Longitud (m)</label><input type="number" id="longTuberia" value="100" step="5"></div>
+        <div class="form-group"><label>CHW</label><input type="number" id="chw" value="140" step="1" min="1"></div>
+        <div class="form-group"><label>Diámetro tubería (mm)</label><input type="number" id="diametroTubo" value="50" step="1" min="1"></div>
+        <div class="form-group"><label>Longitud (m)</label><input type="number" id="longTuberia" value="100" step="5" min="1"></div>
         <button class="btn btn-sm" id="btnCalcularHidraulica">🔧 Calcular red</button>
         <div id="resultadoHidraulica">Presiones y caudales dinámicos.</div>
       </div>
@@ -397,14 +361,14 @@
           <div class="stat-item"><span>Cobertura</span><span id="coberturaValor">--</span></div>
         </div>
         <button class="btn btn-sm" id="btnCalcularUniformidad">📈 Calcular uniformidad</button>
-        <div style="margin-top:0.3rem;font-size:clamp(0.65rem,0.9vw,0.7rem); color:#1a4053;">Heatmap simulado sobre la malla de campo.</div>
+        <div style="margin-top:0.3rem;font-size:clamp(0.6rem,0.9vw,0.7rem); color:#1a4053;">Heatmap simulado sobre la malla de campo.</div>
       </div>
       <!-- PANEL PROGRAMACIÓN -->
       <div id="tab-programacion" class="panel">
         <h4>⏳ Turnos y lámina</h4>
-        <div class="form-group"><label>Eficiencia (%)</label><input type="number" id="eficiencia" value="75" step="1"></div>
-        <div class="form-group"><label>Lámina neta (mm)</label><input type="number" id="laminaNeta" value="12" step="0.5"></div>
-        <div class="form-group"><label>Tiempo (min)</label><input type="number" id="tiempoRiego" value="45" step="5"></div>
+        <div class="form-group"><label>Eficiencia (%)</label><input type="number" id="eficiencia" value="75" step="1" min="1" max="100"></div>
+        <div class="form-group"><label>Lámina neta (mm)</label><input type="number" id="laminaNeta" value="12" step="0.5" min="0.1"></div>
+        <div class="form-group"><label>Tiempo (min)</label><input type="number" id="tiempoRiego" value="45" step="5" min="1"></div>
         <button class="btn btn-sm" id="btnCalcularProgramacion">⏱️ Calcular</button>
         <div id="resultadoProgramacion">Lámina bruta, ciclos, turnos.</div>
       </div>
@@ -415,28 +379,27 @@
       <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center; border-top: 2px solid #d5e2ec; padding-top: 0.5rem;">
         <button class="btn btn-sm btn-outline" id="btnZoomIn">➕ Zoom</button>
         <button class="btn btn-sm btn-outline" id="btnZoomOut">➖ Zoom</button>
-        <button class="btn btn-sm btn-outline" id="btnZoomReset">🎯 Reset Zoom</button>
         <button class="btn btn-sm btn-outline" id="btnExportarReporte">📄 Reporte</button>
-        <span style="font-size:clamp(0.65rem,0.9vw,0.75rem); color:#1f4b62; margin-left:auto;">Toca o arrastra para explorar</span>
+        <span style="font-size:clamp(0.6rem,0.9vw,0.75rem); color:#1f4b62; margin-left:auto;">Desliza para explorar</span>
       </div>
     </div>
   </div>
   <div class="footer">
     <span>⚠️ Simulación técnica · presiones y uniformidad aproximadas</span>
-    <span>🧪 Validación de márgenes activa</span>
+    <span>🧪 laterales visibles con línea gruesa</span>
   </div>
 </div>
 <script>
   (function() {
     // ---- Estado global ----
     const state = {
-      field: { largo: 800, ancho: 342, patron: 'cuadrado', separacion: 33.5, diametro: 40, seplateral: 33.5, margenX: 20, margenY: 20 },
+      field: { largo: 800, ancho: 342, patron: 'cuadrado', separacion: 33.5, radio: 20.5, seplateral: 33.5, margenX: 20, margenY: 20 },
       laterales: [],
       aspersores: [],
       equipos: [
-        { id: 'RainBird-30', q: 2.5, presion: 3.0, diametro: 12 },
-        { id: 'Hunter-20', q: 1.8, presion: 2.8, diametro: 10 },
-        { id: 'Nelson-40', q: 3.2, presion: 3.5, diametro: 14 }
+        { id: 'RainBird-30', q: 2.5, presion: 3.0, radio: 12 },
+        { id: 'Hunter-20', q: 1.8, presion: 2.8, radio: 10 },
+        { id: 'Nelson-40', q: 3.2, presion: 3.5, radio: 14 }
       ],
       zoom: 1,
       unidadCaudal: 'm3h'
@@ -445,96 +408,30 @@
     const canvas = document.getElementById('canvasRiego');
     const ctx = canvas.getContext('2d');
 
-    // ---- Validación estricta de márgenes y dimensiones ----
-    function validarDimensiones(f) {
-      let advertencias = [];
-      
-      if (f.margenX < f.radio) {
-        advertencias.push(`⚠️ El Margen X (${f.margenX} m) es menor que el radio del aspersor (${f.radio} m). El agua se saldrá del límite del campo.`);
-      }
-      if (f.margenY < f.radio) {
-        advertencias.push(`⚠️ El Margen Y (${f.margenY} m) es menor que el radio del aspersor (${f.radio} m). El agua se saldrá del límite del campo.`);
-      }
-      
-      if (f.separacion > f.diametro) {
-        advertencias.push(`⚠️ La separación entre aspersores (${f.separacion} m) es mayor que el diámetro (${f.diametro} m). No habrá solape en vertical.`);
-      }
-      if (f.seplateral > f.diametro) {
-        advertencias.push(`⚠️ La separación entre laterales (${f.seplateral} m) es mayor que el diámetro (${f.diametro} m). No habrá solape en horizontal.`);
-      }
-
-      const largoUtil = f.largo - 2 * f.margenX;
-      const anchoUtil = f.ancho - 2 * f.margenY;
-      if (largoUtil <= 0 || anchoUtil <= 0) {
-        advertencias.push(`❌ ERROR CRÍTICO: Los márgenes son más grandes que el campo. Área útil inválida.`);
-      }
-
-      if (advertencias.length > 0) {
-        alert("ADVERTENCIAS DE DISEÑO:\n\n" + advertencias.join("\n\n"));
-        return false;
-      }
-      return true;
-    }
-
-    // ---- conversión de caudal ----
-    function convertirCaudal(valor, desde, hacia) {
-      if (desde === 'm3h' && hacia === 'lps') return valor / 3.6;
-      if (desde === 'm3h' && hacia === 'gpm') return valor * 4.4029;
-      if (desde === 'lps' && hacia === 'm3h') return valor * 3.6;
-      if (desde === 'lps' && hacia === 'gpm') return valor * 15.8503;
-      if (desde === 'gpm' && hacia === 'm3h') return valor / 4.4029;
-      if (desde === 'gpm' && hacia === 'lps') return valor / 15.8503;
-      return valor;
-    }
-
+    // ---- conversión de caudal (para mostrar) ----
     function mostrarCaudal(valorM3h) {
-      const unidad = state.unidadCaudal;
-      if (unidad === 'lps') return (valorM3h / 3.6).toFixed(2) + ' l/s';
-      if (unidad === 'gpm') return (valorM3h * 4.4029).toFixed(2) + ' gpm';
       return valorM3h.toFixed(2) + ' m³/h';
     }
 
     // ---- obtener parámetros de campo ----
     function getFieldParams() {
-      const diametro = parseFloat(document.getElementById('diametroAspersor').value) || 40;
       return {
-        largo: parseFloat(document.getElementById('fieldLargo').value) || 800,
-        ancho: parseFloat(document.getElementById('fieldAncho').value) || 342,
+        largo: parseFloat(document.getElementById('fieldLargo').value) || 40,
+        ancho: parseFloat(document.getElementById('fieldAncho').value) || 30,
         patron: document.getElementById('patronRiego').value,
-        separacion: parseFloat(document.getElementById('sepAspersor').value) || 33.5,
-        diametro: diametro,
-        radio: diametro / 2,
-        seplateral: parseFloat(document.getElementById('seplateral').value) || 33.5,
-        margenX: parseFloat(document.getElementById('fieldMargenX').value) || 20,
-        margenY: parseFloat(document.getElementById('fieldMargenY').value) || 20
+        separacion: parseFloat(document.getElementById('sepAspersor').value) || 8,
+        radio: parseFloat(document.getElementById('radioAspersor').value) || 6,
+        seplateral: parseFloat(document.getElementById('seplateral').value) || 10,
+        margenX: parseFloat(document.getElementById('fieldMargenX').value) || 0,
+        margenY: parseFloat(document.getElementById('fieldMargenY').value) || 0
       };
     }
 
-    // ---- cálculo automático de zoom inicial ----
-    function calcularZoomInicial(f) {
-      const w = canvas.width;
-      const h = canvas.height;
-      const margin = 60;
-      const scaleX = (w - 2 * margin) / f.largo;
-      const scaleY = (h - 2 * margin) / f.ancho;
-      const scaleBase = Math.min(scaleX, scaleY);
-      
-      // Ajustar zoom para que el campo ocupe bien el canvas
-      let zoom = 1;
-      if (scaleBase < 0.5) {
-        zoom = 1.5; // Campo muy grande, hacer zoom
-      } else if (scaleBase > 1.5) {
-        zoom = 0.8; // Campo pequeño, reducir zoom
-      }
-      
-      return zoom;
-    }
-
-    // ---- dibujo del campo con solape completo ----
+    // ---- dibujo del campo con laterales resaltados ----
     function dibujarCampo() {
       const f = getFieldParams();
       const w = canvas.width, h = canvas.height;
-      const margin = 60;
+      const margin = 40;
       const scaleX = (w - 2 * margin) / f.largo;
       const scaleY = (h - 2 * margin) / f.ancho;
       const scale = Math.min(scaleX, scaleY) * state.zoom;
@@ -542,8 +439,6 @@
       const offsetY = (h - f.ancho * scale) / 2;
 
       ctx.clearRect(0, 0, w, h);
-      
-      // Fondo
       const grad = ctx.createLinearGradient(0,0,0,h);
       grad.addColorStop(0, '#f0f8f0');
       grad.addColorStop(1, '#e2efe2');
@@ -567,118 +462,92 @@
       const margenYPx = f.margenY * scale;
       const inicioX = offsetX + margenXPx;
       const inicioY = offsetY + margenYPx;
-      const anchoUtilPx = (f.largo - 2*f.margenX) * scale;
-      const altoUtilPx = (f.ancho - 2*f.margenY) * scale;
+      const anchoUtil = (f.largo - 2*f.margenX) * scale;
+      const altoUtil = (f.ancho - 2*f.margenY) * scale;
 
-      // Dibujar área útil con relleno
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-      ctx.fillRect(inicioX, inicioY, anchoUtilPx, altoUtilPx);
-
+      if (f.margenX > 0) {
+        ctx.strokeStyle = '#2980b9';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeRect(offsetX + margenXPx, offsetY, anchoUtil, f.ancho * scale);
+        ctx.setLineDash([]);
+      }
+      if (f.margenY > 0) {
+        ctx.strokeStyle = '#27ae60';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeRect(offsetX, offsetY + margenYPx, f.largo * scale, altoUtil);
+        ctx.setLineDash([]);
+      }
       if (f.margenX > 0 || f.margenY > 0) {
         ctx.strokeStyle = '#c0392b';
         ctx.lineWidth = 2;
         ctx.setLineDash([4, 5]);
-        ctx.strokeRect(inicioX, inicioY, anchoUtilPx, altoUtilPx);
+        ctx.strokeRect(inicioX, inicioY, anchoUtil, altoUtil);
         ctx.setLineDash([]);
       }
 
       // Rejilla
       ctx.strokeStyle = '#b0cfc0';
-      ctx.lineWidth = 1;
-      const pasoRejilla = 50;
-      for (let i = 0; i <= f.largo; i += pasoRejilla) {
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i <= f.largo; i += 5) {
         const x = offsetX + i * scale;
-        if (x >= inicioX && x <= inicioX + anchoUtilPx) {
+        if (x >= inicioX && x <= inicioX + anchoUtil) {
           ctx.beginPath();
           ctx.moveTo(x, inicioY);
-          ctx.lineTo(x, inicioY + altoUtilPx);
+          ctx.lineTo(x, inicioY + altoUtil);
           ctx.stroke();
         }
       }
-      for (let i = 0; i <= f.ancho; i += pasoRejilla) {
+      for (let i = 0; i <= f.ancho; i += 5) {
         const y = offsetY + i * scale;
-        if (y >= inicioY && y <= inicioY + altoUtilPx) {
+        if (y >= inicioY && y <= inicioY + altoUtil) {
           ctx.beginPath();
           ctx.moveTo(inicioX, y);
-          ctx.lineTo(inicioX + anchoUtilPx, y);
+          ctx.lineTo(inicioX + anchoUtil, y);
           ctx.stroke();
         }
       }
 
-      // Laterales
+      // ---- LATERALES: se dibujan con línea gruesa y color llamativo ----
       state.laterales.forEach(l => {
         const x = offsetX + l.x * scale;
-        if (x >= inicioX && x <= inicioX + anchoUtilPx) {
+        if (x >= inicioX && x <= inicioX + anchoUtil) {
           ctx.beginPath();
           ctx.moveTo(x, inicioY);
-          ctx.lineTo(x, inicioY + altoUtilPx);
-          ctx.strokeStyle = '#3a6a7a';
-          ctx.lineWidth = 3;
-          ctx.setLineDash([6, 5]);
+          ctx.lineTo(x, inicioY + altoUtil);
+          ctx.strokeStyle = '#e67e22';   // naranja para destacar
+          ctx.lineWidth = 4;             // más grueso
+          ctx.setLineDash([6, 4]);
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = 'rgba(0,0,0,0.15)';
           ctx.stroke();
           ctx.setLineDash([]);
+          ctx.shadowBlur = 0;
+          // Etiqueta "Lateral"
+          ctx.fillStyle = '#d35400';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('⬅ Lateral', x - 24, inicioY - 12);
         }
       });
 
-      // ---- Aspersores ----
+      // ---- Aspersores y solape ----
       const aspersores = state.aspersores;
       const radio = f.radio;
+      const diametro = 2 * radio;
 
-      // Dibujar círculos de radio (solape)
-      aspersores.forEach(a => {
-        const x = offsetX + a.x * scale;
-        const y = offsetY + a.y * scale;
-        if (x < inicioX || x > inicioX + anchoUtilPx || y < inicioY || y > inicioY + altoUtilPx) return;
-
-        const radioPx = radio * scale;
-        
-        // Círculo de radio con relleno semitransparente
-        ctx.beginPath();
-        ctx.arc(x, y, radioPx, 0, 2 * Math.PI);
-        ctx.fillStyle = 'rgba(31, 122, 158, 0.15)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(31, 122, 158, 0.6)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([4, 6]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      });
-
-      // Dibujar puntos de aspersores
-      aspersores.forEach(a => {
-        const x = offsetX + a.x * scale;
-        const y = offsetY + a.y * scale;
-        if (x < inicioX || x > inicioX + anchoUtilPx || y < inicioY || y > inicioY + altoUtilPx) return;
-
-        // Punto central más visible
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = 'rgba(0,0,0,0.3)';
-        ctx.beginPath();
-        ctx.arc(x, y, 6, 0, 2 * Math.PI);
-        ctx.fillStyle = '#0b4f6c';
-        ctx.fill();
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-      });
-
-      // ---- Líneas de solape entre pares de aspersores ----
-      const umbral = 2 * radio;
+      // Dibujar líneas de solape (verdes)
       const n = aspersores.length;
-      
-      // Limitar líneas de solape para mejor rendimiento
-      const maxLineas = 500;
-      let lineasDibujadas = 0;
-      
-      for (let i = 0; i < n && lineasDibujadas < maxLineas; i++) {
-        for (let j = i + 1; j < n && lineasDibujadas < maxLineas; j++) {
+      let contadorSolapes = 0;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
           const a1 = aspersores[i];
           const a2 = aspersores[j];
           const dx = a2.x - a1.x;
           const dy = a2.y - a1.y;
           const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < umbral && dist > 0.1) {
+          if (dist < diametro && dist > 0.1) {
+            contadorSolapes++;
             const x1 = offsetX + a1.x * scale;
             const y1 = offsetY + a1.y * scale;
             const x2 = offsetX + a2.x * scale;
@@ -686,31 +555,60 @@
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
-            ctx.strokeStyle = 'rgba(46, 204, 113, 0.4)';
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([3, 4]);
+            ctx.strokeStyle = 'rgba(46, 204, 113, 0.9)';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([4, 4]);
             ctx.stroke();
             ctx.setLineDash([]);
-            lineasDibujadas++;
           }
         }
       }
 
-      // Información en pantalla
-      ctx.fillStyle = '#0b2b3f';
-      ctx.font = 'bold 14px Arial';
-      ctx.fillText(`Zoom: ${state.zoom.toFixed(2)}x`, 10, 25);
-      ctx.font = '12px Arial';
-      ctx.fillText(`Aspersores: ${state.aspersores.length}`, 10, 45);
-      ctx.fillText(`Laterales: ${state.laterales.length}`, 10, 65);
+      // Dibujar círculos y puntos
+      aspersores.forEach(a => {
+        const x = offsetX + a.x * scale;
+        const y = offsetY + a.y * scale;
+        if (x < inicioX || x > inicioX + anchoUtil || y < inicioY || y > inicioY + altoUtil) return;
+
+        const radioPx = radio * scale;
+        ctx.beginPath();
+        ctx.arc(x, y, radioPx, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(31, 122, 158, 0.20)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(31, 122, 158, 0.7)';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([4, 6]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = 'rgba(0,0,0,0.15)';
+        ctx.beginPath();
+        ctx.arc(x, y, 7, 0, 2 * Math.PI);
+        ctx.fillStyle = '#0b4f6c';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      });
+
+      // Información en esquina
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Solapes: ${contadorSolapes}`, 15, 30);
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(`Aspersores: ${n}`, 15, 52);
+      ctx.fillText(`Radio: ${radio} m`, 15, 72);
+      ctx.fillText(`Sep: ${f.separacion} m`, 15, 92);
+      ctx.fillText(`Laterales: ${state.laterales.length}`, 15, 112);
     }
 
-    // ---- generar aspersores ----
+    // ---- generar aspersores usando el número de laterales del input ----
     function generarAspersores() {
       const f = getFieldParams();
-      
-      if (!validarDimensiones(f)) return;
-
       const sep = f.separacion;
       const radio = f.radio;
       const seplateral = f.seplateral || sep * 1.2;
@@ -721,53 +619,55 @@
 
       const largoUtil = f.largo - 2 * margenX;
       const anchoUtil = f.ancho - 2 * margenY;
+      if (largoUtil <= 0 || anchoUtil <= 0) {
+        alert('Los márgenes son demasiado grandes para el campo. Redúzcalos.');
+        return;
+      }
 
-      let numLaterales = Math.max(2, Math.floor(largoUtil / seplateral));
-      if (numLaterales < 2) numLaterales = 2;
+      // Usar el número de laterales definido por el usuario
+      let numLaterales = parseInt(document.getElementById('numLaterales').value) || 3;
+      if (numLaterales < 1) numLaterales = 1;
       
       const laterales = [];
       for (let i = 0; i < numLaterales; i++) {
         const x = margenX + (i + 0.5) * largoUtil / numLaterales;
-        if (x >= margenX && x <= (margenX + largoUtil)) {
-          laterales.push({ x: x });
-        }
+        laterales.push({ x: x });
       }
       state.laterales = laterales;
-      document.getElementById('numLaterales').value = numLaterales;
 
       let dx = sep, dy = sep;
       if (patron === 'rectangular' || patron === 'cuadrado') { dx = sep; dy = sep; }
       else if (patron === 'triangular') { dx = sep * 0.866; dy = sep * 0.75; }
+
+      // Obtener equipo activo para caudal y presión
+      const equipoSeleccionado = document.getElementById('catalogoEquipos').value;
+      let equipoActivo = state.equipos.find(e => e.id === equipoSeleccionado);
+      if (!equipoActivo) equipoActivo = state.equipos[0];
+      const q = equipoActivo ? equipoActivo.q : 2.5;
+      const presion = equipoActivo ? equipoActivo.presion : 3.0;
+      const radioEquipo = equipoActivo ? equipoActivo.radio : f.radio;
 
       laterales.forEach(lateral => {
         let y = margenY + dy / 2;
         let offsetX = lateral.x;
         while (y < margenY + anchoUtil) {
           let x = offsetX + (patron === 'triangular' && (Math.floor((y - margenY) / dy) % 2 === 1) ? dx / 2 : 0);
-          
           if (x < margenX) x = margenX;
           if (x > margenX + largoUtil) x = margenX + largoUtil;
-          
-          aspersores.push({ x, y, radio, q: 2.5, presion: 3.0 });
+          aspersores.push({ x, y, radio: radioEquipo, q: q, presion: presion });
           y += dy;
         }
       });
 
       state.aspersores = aspersores;
-      
-      // Calcular zoom inicial automático
-      state.zoom = calcularZoomInicial(f);
-      
       dibujarCampo();
       actualizarEstadisticas();
       calcularHidraulica();
     }
 
-    // ---- generar con laterales fijos ----
+    // ---- generar con laterales fijos (usado por el botón "Generar laterales") ----
     function generarAspersoresConLaterales(laterales) {
       const f = getFieldParams();
-      if (!validarDimensiones(f)) return;
-
       const sep = f.separacion;
       const radio = f.radio;
       const patron = f.patron;
@@ -776,38 +676,34 @@
       const aspersores = [];
       const largoUtil = f.largo - 2 * margenX;
       const anchoUtil = f.ancho - 2 * margenY;
-
+      if (largoUtil <= 0 || anchoUtil <= 0) {
+        alert('Los márgenes son demasiado grandes para el campo. Redúzcalos.');
+        return;
+      }
       let dx = sep, dy = sep;
       if (patron === 'rectangular' || patron === 'cuadrado') { dx = sep; dy = sep; }
       else if (patron === 'triangular') { dx = sep * 0.866; dy = sep * 0.75; }
-      
+
+      // Obtener equipo activo
+      const equipoSeleccionado = document.getElementById('catalogoEquipos').value;
+      let equipoActivo = state.equipos.find(e => e.id === equipoSeleccionado);
+      if (!equipoActivo) equipoActivo = state.equipos[0];
+      const q = equipoActivo ? equipoActivo.q : 2.5;
+      const presion = equipoActivo ? equipoActivo.presion : 3.0;
+      const radioEquipo = equipoActivo ? equipoActivo.radio : f.radio;
+
       laterales.forEach(lateral => {
-        if (lateral.x < margenX || lateral.x > (margenX + largoUtil)) {
-          console.warn(`Lateral en X=${lateral.x} fuera del área útil. Ignorado.`);
-          return;
-        }
-        
         let y = margenY + dy / 2;
         let offsetX = lateral.x;
         while (y < margenY + anchoUtil) {
           let x = offsetX + (patron === 'triangular' && (Math.floor((y - margenY) / dy) % 2 === 1) ? dx / 2 : 0);
           if (x < margenX) x = margenX;
           if (x > margenX + largoUtil) x = margenX + largoUtil;
-          aspersores.push({ x, y, radio, q: 2.5, presion: 3.0 });
+          aspersores.push({ x, y, radio: radioEquipo, q: q, presion: presion });
           y += dy;
         }
       });
-      
-      if (aspersores.length === 0) {
-        alert("⚠️ No se pudieron generar aspersores. Verifica que los laterales estén dentro del área útil.");
-        return;
-      }
-
       state.aspersores = aspersores;
-      
-      // Calcular zoom inicial automático
-      state.zoom = calcularZoomInicial(f);
-      
       dibujarCampo();
       actualizarEstadisticas();
       calcularHidraulica();
@@ -845,10 +741,14 @@
       if (Qms > 0 && Dm > 0) {
         hf = 10.67 * Math.pow(Qms / chw, 1.852) * long / Math.pow(Dm, 4.87);
       }
-      const pDinamica = 3.0 - hf * 0.1;
-      const qMostrar = mostrarCaudal(qTotal);
+      // Obtener presión del equipo activo
+      const equipoSeleccionado = document.getElementById('catalogoEquipos').value;
+      let equipoActivo = state.equipos.find(e => e.id === equipoSeleccionado);
+      if (!equipoActivo) equipoActivo = state.equipos[0];
+      const pBase = equipoActivo ? equipoActivo.presion : 3.0;
+      const pDinamica = pBase - hf * 0.1;
       document.getElementById('resultadoHidraulica').innerHTML = `
-        <div><strong>Caudal total:</strong> ${qMostrar}</div>
+        <div><strong>Caudal total:</strong> ${mostrarCaudal(qTotal)}</div>
         <div><strong>Pérdida fricción:</strong> ${hf.toFixed(3)} m.c.a.</div>
         <div><strong>Presión dinámica estimada:</strong> ${Math.max(0.5, pDinamica).toFixed(2)} bar</div>
         <div style="color:#1f5f4a;">${pDinamica>1.8 ? '✅ Rango aceptable' : '⚠️ Presión baja'}</div>
@@ -862,7 +762,8 @@
       const tiempo = parseFloat(document.getElementById('tiempoRiego').value) || 45;
       const laminaBruta = laminaNeta / (eficiencia / 100);
       const qTotal = state.aspersores.reduce((acc, a) => acc + (a.q || 2.5), 0);
-      const area = (getFieldParams().largo * getFieldParams().ancho) || 1000;
+      const f = getFieldParams();
+      const area = (f.largo - 2 * f.margenX) * (f.ancho - 2 * f.margenY);
       const laminaAplicada = (qTotal * (tiempo / 60)) / area * 1000;
       document.getElementById('resultadoProgramacion').innerHTML = `
         <div><strong>Lámina neta:</strong> ${laminaNeta.toFixed(1)} mm</div>
@@ -881,22 +782,19 @@
       txt += `Margen X: ${f.margenX} m, Margen Y: ${f.margenY} m\n`;
       txt += `Área útil: ${(f.largo-2*f.margenX)*(f.ancho-2*f.margenY)} m²\n`;
       txt += `Aspersores: ${state.aspersores.length}\n`;
-      txt += `Diámetro: ${f.diametro} m (radio ${f.radio} m)\n`;
+      txt += `Radio: ${f.radio} m (diámetro ${f.radio*2} m)\n`;
+      txt += `Laterales: ${state.laterales.length}\n`;
       txt += `Uniformidad: CU=${document.getElementById('cuValor').innerText}% DU=${document.getElementById('duValor').innerText}%\n`;
       txt += '--- Datos de aspersores ---\n';
-      state.aspersores.slice(0, 10).forEach((a, i) => {
-        const qMostrar = mostrarCaudal(a.q || 2.5);
-        txt += `Asp ${i+1}: Q=${qMostrar}, P=${(a.presion||3.0).toFixed(1)} bar, R=${a.radio}m\n`;
+      state.aspersores.forEach((a, i) => {
+        txt += `Asp ${i+1}: Q=${mostrarCaudal(a.q||2.5)}, P=${(a.presion||3.0).toFixed(1)} bar, R=${a.radio}m\n`;
       });
-      if (state.aspersores.length > 10) txt += `... y ${state.aspersores.length - 10} más (ver consola)\n`;
-      
-      alert(txt + '\n(Reporte detallado en consola del navegador)');
-      console.log("REPORTE COMPLETO:", state.aspersores);
+      alert(txt + '\n(Reporte completo en consola)');
+      console.log(txt);
     }
 
     // ---- eventos ----
     document.addEventListener('DOMContentLoaded', function() {
-      // Tabs
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -910,23 +808,13 @@
 
       document.getElementById('btnGenerarLaterales').addEventListener('click', function() {
         const f = getFieldParams();
-        const num = parseInt(document.getElementById('numLaterales').value) || 24;
+        const num = parseInt(document.getElementById('numLaterales').value) || 3;
+        if (num < 1) { alert('El número de laterales debe ser al menos 1.'); return; }
         const margenX = f.margenX || 0;
         const largoUtil = f.largo - 2 * margenX;
-        
-        if (num < 1) {
-          alert("⚠️ El número de laterales debe ser al menos 1.");
-          return;
-        }
-        
         const laterales = [];
         for (let i = 1; i <= num; i++) {
-          const x = margenX + i * largoUtil / (num + 1);
-          if (x < margenX || x > (margenX + largoUtil)) {
-            alert(`⚠️ ERROR DE LÍMITE:\nEl lateral ${i} se sale del área útil (X=${x.toFixed(2)} m).\n\nAjuste el número de laterales o reduzca los márgenes.`);
-            return;
-          }
-          laterales.push({ x: x });
+          laterales.push({ x: margenX + i * largoUtil / (num + 1) });
         }
         state.laterales = laterales;
         generarAspersoresConLaterales(laterales);
@@ -941,47 +829,28 @@
       document.getElementById('btnExportarReporte').addEventListener('click', generarReporte);
 
       document.getElementById('btnZoomIn').addEventListener('click', function() {
-        state.zoom = Math.min(5, state.zoom * 1.3);
+        state.zoom = Math.min(2, state.zoom * 1.2);
         dibujarCampo();
       });
       document.getElementById('btnZoomOut').addEventListener('click', function() {
-        state.zoom = Math.max(0.2, state.zoom / 1.3);
-        dibujarCampo();
-      });
-      document.getElementById('btnZoomReset').addEventListener('click', function() {
-        const f = getFieldParams();
-        state.zoom = calcularZoomInicial(f);
+        state.zoom = Math.max(0.5, state.zoom / 1.2);
         dibujarCampo();
       });
 
       document.getElementById('btnAgregarEquipo').addEventListener('click', function() {
-        let q = parseFloat(document.getElementById('eqCaudal').value) || 2.5;
+        const q = parseFloat(document.getElementById('eqCaudal').value) || 2.5;
         const p = parseFloat(document.getElementById('eqPresion').value) || 3.0;
-        const d = parseFloat(document.getElementById('eqDiametro').value) || 12;
-        const unidad = document.getElementById('unidadCaudal').value;
-        if (unidad === 'lps') q = q * 3.6;
-        else if (unidad === 'gpm') q = q / 4.4029;
-        const radio = d / 2;
-        state.equipos.push({ id: `Custom-${Date.now()}`, q, presion: p, diametro: d });
-        alert(`✅ Equipo agregado:\nQ=${mostrarCaudal(q)}, P=${p} bar, Diámetro=${d}m`);
+        const r = parseFloat(document.getElementById('eqRadio').value) || 12;
+        state.equipos.push({ id: `Custom-${Date.now()}`, q, presion: p, radio: r });
+        alert(`Equipo agregado: Q=${mostrarCaudal(q)}, P=${p} bar, R=${r}m`);
         const sel = document.getElementById('catalogoEquipos');
         const opt = document.createElement('option');
         opt.value = `Custom-${Date.now()}`;
-        opt.text = `Custom · Q=${mostrarCaudal(q)} · P=${p} · D=${d}m`;
+        opt.text = `Custom · Q=${mostrarCaudal(q)} · P=${p} · R=${r}`;
         sel.appendChild(opt);
       });
 
-      document.getElementById('unidadCaudal').addEventListener('change', function() {
-        state.unidadCaudal = this.value;
-        dibujarCampo();
-        calcularHidraulica();
-      });
-
-      window.addEventListener('resize', function() {
-        dibujarCampo();
-      });
-
-      // Inicializar
+      // Inicializar con valores grandes (800x342) y 5 laterales
       generarAspersores();
     });
   })();
