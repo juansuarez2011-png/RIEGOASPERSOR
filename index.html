@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>WinSIP 3 · Diseño de Riego con Laterales</title>
+  <title>WinSIP 3 · Diseño de Riego Profesional</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -27,23 +27,25 @@
       border: 2px solid #a0b8c8;
       transition: all 0.3s ease;
     }
-    /* Modo diseño completo: oculta el sidebar y footer, expande canvas */
+    /* Modo diseño completo */
     .app.diseno-completo .sidebar { display: none; }
     .app.diseno-completo .footer { display: none; }
     .app.diseno-completo .canvas-wrap {
       flex: 1 1 100%;
       border-left: none;
       padding: 0.5rem;
+      background: #eef4f7;
     }
     .app.diseno-completo .canvas-wrap canvas {
-      aspect-ratio: auto;
-      height: 92vh;
+      height: auto;
+      max-height: 85vh;
       width: 100%;
+      aspect-ratio: 16 / 10;
       border-width: 4px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
     .app.diseno-completo .header .badge { background: #e67e22; }
-    .app.diseno-completo .btn-flotante { background: #c0392b; border-color: #c0392b; }
-    .app.diseno-completo .btn-flotante::after { content: " ✖ Cerrar"; }
+    .btn-diseno-completo.activo { background: #c0392b; border-color: #c0392b; }
 
     .header {
       background: #0b2b3f;
@@ -59,6 +61,7 @@
     .header h1 { font-weight: 400; font-size: clamp(1.2rem, 4vw, 1.8rem); display: flex; align-items: center; gap: 0.4rem; }
     .header h1 strong { font-weight: 600; color: #9fc7e0; }
     .header .badge { background: #1d4d66; padding: 0.3rem 1rem; border-radius: 30px; font-size: clamp(0.65rem, 1.5vw, 0.85rem); border: 2px solid #5f8ca8; }
+    
     .main { display: flex; flex-direction: row; flex-wrap: wrap; background: #f5f9fc; }
     .sidebar {
       flex: 1 1 340px;
@@ -66,161 +69,86 @@
       background: #f5f9fc;
       border-right: 3px solid #b0c8d6;
       padding: 1rem 0.8rem;
-      max-height: 800px;
+      max-height: 85vh;
       overflow-y: auto;
     }
     .tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; border-bottom: 3px solid #b0c8d6; padding-bottom: 0.6rem; }
     .tab-btn {
-      background: transparent;
-      border: 2px solid transparent;
-      padding: 0.4rem 0.8rem;
-      border-radius: 30px;
-      font-weight: 500;
-      color: #1f4b62;
-      cursor: pointer;
-      transition: 0.15s;
-      font-size: clamp(0.7rem, 1.4vw, 0.85rem);
-      touch-action: manipulation;
+      background: transparent; border: 2px solid transparent; padding: 0.4rem 0.8rem;
+      border-radius: 30px; font-weight: 500; color: #1f4b62; cursor: pointer;
+      transition: 0.15s; font-size: clamp(0.7rem, 1.4vw, 0.85rem); touch-action: manipulation;
     }
     .tab-btn.active { background: #0b2b3f; color: white; border-color: #0b2b3f; box-shadow: 0 2px 8px rgba(11,43,63,0.3); }
     .tab-btn:hover { background: #d3e2ed; border-color: #8bb0c4; }
+    
     .panel { display: none; border: 2px solid #c8dae6; border-radius: 16px; padding: 0.8rem; background: white; margin-bottom: 0.5rem; }
     .panel.active { display: block; }
     .panel h4 { margin: 0.3rem 0 0.6rem; color: #0b2b3f; font-weight: 500; border-bottom: 3px solid #c8dae6; padding-bottom: 0.3rem; font-size: clamp(0.9rem, 1.6vw, 1.1rem); }
+    
     .form-group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 0.5rem; margin: 0.4rem 0; padding: 0.2rem 0.2rem; border-bottom: 1px dashed #d5e2ec; }
     .form-group label { min-width: 75px; font-size: clamp(0.7rem, 1.2vw, 0.82rem); color: #1f3f4f; font-weight: 500; }
     .form-group input, .form-group select {
-      padding: 0.3rem 0.5rem;
-      border: 2px solid #b9cfdd;
-      border-radius: 10px;
-      background: white;
-      font-size: clamp(0.75rem, 1.2vw, 0.85rem);
-      flex: 1;
-      min-width: 50px;
-      transition: 0.15s;
+      padding: 0.3rem 0.5rem; border: 2px solid #b9cfdd; border-radius: 10px; background: white;
+      font-size: clamp(0.75rem, 1.2vw, 0.85rem); flex: 1; min-width: 50px; transition: 0.15s;
     }
     .form-group input:focus, .form-group select:focus { border-color: #1d5f7a; box-shadow: 0 0 0 3px rgba(29,95,122,0.2); outline: none; }
     .form-group input[type="number"] { width: 70px; flex: 0 1 70px; }
+    
     .btn {
-      background: #1d5f7a;
-      border: 2px solid #1d5f7a;
-      color: white;
-      padding: 0.4rem 1.2rem;
-      border-radius: 30px;
-      font-weight: 500;
-      font-size: clamp(0.7rem, 1.2vw, 0.85rem);
-      cursor: pointer;
-      transition: 0.15s;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      touch-action: manipulation;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
+      background: #1d5f7a; border: 2px solid #1d5f7a; color: white; padding: 0.4rem 1.2rem;
+      border-radius: 30px; font-weight: 500; font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+      cursor: pointer; transition: 0.15s; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      touch-action: manipulation; display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;
     }
     .btn:hover { background: #144a61; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .btn:active { transform: translateY(0px); }
     .btn-sm { padding: 0.2rem 0.8rem; font-size: clamp(0.65rem, 1vw, 0.75rem); }
     .btn-outline { background: transparent; border: 2px solid #1d5f7a; color: #1d5f7a; }
     .btn-outline:hover { background: #1d5f7a; color: white; }
+
+    .btn-diseno-completo {
+      background: #e67e22; border: 2px solid #d35400; color: white; padding: 0.4rem 1.2rem;
+      border-radius: 30px; font-weight: bold; font-size: clamp(0.8rem, 1.5vw, 1rem);
+      cursor: pointer; transition: 0.2s; touch-action: manipulation; white-space: nowrap;
+    }
+    .btn-diseno-completo:hover { background: #d35400; transform: scale(1.05); }
+
     .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.3rem 0.8rem;
-      background: #e6f0f5;
-      padding: 0.6rem;
-      border-radius: 14px;
-      border: 2px solid #b8cedc;
-      margin: 0.5rem 0;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem 0.8rem;
+      background: #e6f0f5; padding: 0.6rem; border-radius: 14px; border: 2px solid #b8cedc; margin: 0.5rem 0;
     }
     .stat-item { font-size: clamp(0.7rem, 1.1vw, 0.8rem); display: flex; justify-content: space-between; border-bottom: 1px dashed #b0c8d6; padding: 0.1rem 0; }
     .stat-item span:last-child { font-weight: 600; color: #0b2b3f; }
+    
     #resultadoHidraulica, #resultadoProgramacion {
-      background: #e3eef5;
-      border-radius: 14px;
-      padding: 0.6rem;
-      margin-top: 0.5rem;
-      font-size: clamp(0.7rem, 1.1vw, 0.8rem);
-      border: 2px solid #b0c8d6;
-      line-height: 1.5;
+      background: #e3eef5; border-radius: 14px; padding: 0.6rem; margin-top: 0.5rem;
+      font-size: clamp(0.7rem, 1.1vw, 0.8rem); border: 2px solid #b0c8d6; line-height: 1.5;
     }
+    
     .canvas-wrap {
-      flex: 2 1 500px;
-      padding: 1rem;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      min-width: 280px;
-      border-left: 3px solid #b0c8d6;
-      position: relative;
+      flex: 2 1 500px; padding: 1rem; background: #ffffff; display: flex;
+      flex-direction: column; min-width: 280px; border-left: 3px solid #b0c8d6; position: relative;
     }
     canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 4 / 3;
-      background: #fafdfe;
-      border: 4px solid #8aaec4;
-      border-radius: 20px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      cursor: crosshair;
-      touch-action: none;
-      max-width: 100%;
-      min-height: 200px;
+      display: block; width: 100%; height: auto; aspect-ratio: 4 / 3;
+      background: #fafdfe; border: 4px solid #8aaec4; border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); cursor: crosshair; touch-action: none;
     }
+    
     #mensajeCanvas {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(192, 57, 43, 0.9);
-      color: white;
-      padding: 1rem 2rem;
-      border-radius: 16px;
-      font-weight: bold;
-      text-align: center;
-      pointer-events: none;
-      display: none;
-      z-index: 10;
-      font-size: clamp(0.9rem, 2vw, 1.2rem);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      max-width: 90%;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: rgba(192, 57, 43, 0.9); color: white; padding: 1rem 2rem;
+      border-radius: 16px; font-weight: bold; text-align: center; pointer-events: none;
+      display: none; z-index: 10; font-size: clamp(0.9rem, 2vw, 1.2rem);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3); max-width: 90%;
     }
     #mensajeCanvas.info { background: rgba(41, 128, 185, 0.9); }
+    
     .footer {
-      background: #f0f5f9;
-      padding: 0.6rem 1.5rem;
-      font-size: clamp(0.6rem, 1vw, 0.75rem);
-      color: #1e475c;
-      border-top: 3px solid #b0c8d6;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.3rem;
+      background: #f0f5f9; padding: 0.6rem 1.5rem; font-size: clamp(0.6rem, 1vw, 0.75rem);
+      color: #1e475c; border-top: 3px solid #b0c8d6; display: flex;
+      justify-content: space-between; flex-wrap: wrap; gap: 0.3rem;
     }
-
-    /* BOTÓN FLOTANTE (siempre visible) */
-    .btn-flotante {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      z-index: 20;
-      background: #e67e22;
-      border: 3px solid #d35400;
-      color: white;
-      padding: 0.8rem 1.5rem;
-      border-radius: 50px;
-      font-weight: bold;
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-      cursor: pointer;
-      transition: 0.2s;
-      touch-action: manipulation;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .btn-flotante:hover { transform: scale(1.05); background: #d35400; }
-    .btn-flotante:active { transform: scale(0.95); }
 
     @media (max-width: 820px) {
       body { padding: 0.5rem; }
@@ -228,15 +156,12 @@
       .sidebar { border-right: none; border-bottom: 3px solid #b0c8d6; max-height: none; padding: 0.8rem; flex: 1 1 100%; }
       .canvas-wrap { border-left: none; padding: 0.8rem; flex: 1 1 100%; }
       .header { padding: 0.8rem 1rem; }
-      .header h1 { font-size: 1.2rem; }
       .main { flex-direction: column; }
       .form-group label { min-width: 60px; }
       .form-group input[type="number"] { width: 60px; flex: 0 1 60px; }
-      .btn { padding: 0.4rem 0.8rem; }
-      .stat-grid { grid-template-columns: 1fr 1fr; }
-      canvas { border-width: 3px; min-height: 150px; }
-      .btn-flotante { bottom: 10px; right: 10px; padding: 0.6rem 1.2rem; font-size: 0.9rem; }
-      .app.diseno-completo .canvas-wrap canvas { height: 85vh; }
+      canvas { border-width: 3px; min-height: 250px; }
+      .btn-diseno-completo { font-size: 0.8rem; padding: 0.3rem 0.8rem; }
+      .app.diseno-completo .canvas-wrap canvas { max-height: 75vh; }
     }
     @media (max-width: 480px) {
       .header h1 { font-size: 1rem; }
@@ -248,11 +173,8 @@
       .form-group input, .form-group select { font-size: 0.7rem; padding: 0.2rem 0.4rem; border-width: 2px; }
       .stat-grid { grid-template-columns: 1fr; border-width: 2px; }
       .btn { font-size: 0.7rem; padding: 0.3rem 0.6rem; border-width: 2px; }
-      canvas { border-width: 3px; border-radius: 12px; min-height: 120px; }
+      canvas { border-width: 3px; border-radius: 12px; min-height: 200px; }
       .canvas-wrap { padding: 0.5rem; }
-      .app { margin-bottom: 4rem; }
-      .btn-flotante { bottom: 10px; right: 10px; padding: 0.5rem 1rem; font-size: 0.8rem; }
-      .app.diseno-completo .canvas-wrap canvas { height: 80vh; }
     }
   </style>
 </head>
@@ -260,10 +182,12 @@
 <div class="app" id="app">
   <div class="header">
     <h1>🌿 <strong>WinSIP 3</strong> · Riego</h1>
-    <span class="badge">v3.8 · botón flotante</span>
+    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+      <span class="badge">v4.0 · Visual Pro</span>
+      <button class="btn-diseno-completo" id="btnToggleDiseno">🔲 Ver diseño completo</button>
+    </div>
   </div>
   <div class="main">
-    <!-- SIDEBAR (igual que antes) -->
     <div class="sidebar" id="sidebar">
       <div class="tabs">
         <button class="tab-btn active" data-tab="tab-diseno">📐 Diseño</button>
@@ -272,7 +196,7 @@
         <button class="tab-btn" data-tab="tab-uniformidad">📊 Uniformidad</button>
         <button class="tab-btn" data-tab="tab-programacion">⏳ Programación</button>
       </div>
-      <!-- PANEL DISEÑO (simplificado) -->
+      
       <div id="tab-diseno" class="panel active">
         <h4>📏 Campo y disposición</h4>
         <div class="form-group"><label>Largo (m)</label><input type="number" id="fieldLargo" value="800" step="1" min="10"></div>
@@ -289,11 +213,17 @@
         <div class="form-group"><label>Sep. aspersores (m)</label><input type="number" id="sepAspersor" value="33.5" step="0.5" min="0.5"></div>
         <div class="form-group"><label>Sep. laterales (m)</label><input type="number" id="seplateral" value="33.5" step="0.5" min="0.5"></div>
         <div class="form-group"><label>Radio (m)</label><input type="number" id="radioAspersor" value="20.5" step="0.5" min="0.5"></div>
-        <div class="form-group"><label>N° laterales</label><input type="number" id="numLaterales" value="3" step="1" min="1"></div>
-        <button class="btn" id="btnGenerarDiseno">📐 Generar diseño</button>
+        <div class="form-group"><label>N° laterales</label><input type="number" id="numLaterales" value="24" step="1" min="1"></div>
+        
+        <div class="form-group" style="border-bottom: none; margin-top: 0.8rem;">
+          <input type="checkbox" id="chkMostrarSolapes" style="width: auto; min-width: auto; flex: none;">
+          <label for="chkMostrarSolapes" style="min-width: auto; cursor: pointer;">Mostrar líneas de solape</label>
+        </div>
+        
+        <button class="btn" id="btnGenerarDiseno" style="margin-top: 0.5rem;">📐 Generar diseño</button>
         <div style="font-size:clamp(0.6rem, 1vw, 0.75rem); color:#1f4b62; margin-top:4px;">Actualiza campo, laterales y aspersores.</div>
       </div>
-      <!-- PANEL EQUIPOS -->
+
       <div id="tab-equipos" class="panel">
         <h4>📦 Catálogo</h4>
         <select id="catalogoEquipos" style="width:100%; padding:0.4rem; border-radius:10px; border:2px solid #b9cfdd; font-size:clamp(0.7rem,1.2vw,0.85rem);">
@@ -305,9 +235,8 @@
         <div class="form-group"><label>P (bar)</label><input type="number" id="eqPresion" value="3.0" step="0.1" min="0.5"></div>
         <div class="form-group"><label>Radio (m)</label><input type="number" id="eqRadio" value="12" step="0.5" min="0.5"></div>
         <button class="btn btn-sm btn-outline" id="btnAgregarEquipo">➕ Agregar equipo</button>
-        <div style="font-size:clamp(0.6rem,0.9vw,0.7rem); color:#3b6179; margin-top:0.3rem;">Equipos personalizados guardados en sesión.</div>
       </div>
-      <!-- PANEL HIDRÁULICA -->
+
       <div id="tab-hidraulica" class="panel">
         <h4>🔧 Pérdidas (Hazen-Williams)</h4>
         <div class="form-group"><label>CHW</label><input type="number" id="chw" value="140" step="1" min="50"></div>
@@ -316,7 +245,7 @@
         <button class="btn btn-sm" id="btnCalcularHidraulica">🔧 Calcular red</button>
         <div id="resultadoHidraulica">Presiones y caudales dinámicos.</div>
       </div>
-      <!-- PANEL UNIFORMIDAD -->
+
       <div id="tab-uniformidad" class="panel">
         <h4>📊 Coeficientes</h4>
         <div id="estadisticasUniformidad" class="stat-grid">
@@ -325,9 +254,8 @@
           <div class="stat-item"><span>Cobertura</span><span id="coberturaValor">--</span></div>
         </div>
         <button class="btn btn-sm" id="btnCalcularUniformidad">📈 Calcular uniformidad</button>
-        <div style="margin-top:0.3rem;font-size:clamp(0.6rem,0.9vw,0.7rem); color:#1a4053;">Heatmap simulado sobre la malla de campo.</div>
       </div>
-      <!-- PANEL PROGRAMACIÓN -->
+
       <div id="tab-programacion" class="panel">
         <h4>⏳ Turnos y lámina</h4>
         <div class="form-group"><label>Eficiencia (%)</label><input type="number" id="eficiencia" value="75" step="1" min="1" max="100"></div>
@@ -337,18 +265,14 @@
         <div id="resultadoProgramacion">Lámina bruta, ciclos, turnos.</div>
       </div>
     </div>
-    <!-- CANVAS -->
+
     <div class="canvas-wrap" id="canvasWrap">
       <div id="mensajeCanvas">⏳ Cargando diseño...</div>
-      <canvas id="canvasRiego" width="800" height="600"></canvas>
-      <!-- BOTÓN FLOTANTE PARA VER DISEÑO COMPLETO -->
-      <button class="btn-flotante" id="btnToggleDiseno">🔲 Ver diseño completo</button>
-
-      <!-- Barra de botones auxiliares (opcional, la dejamos) -->
+      <canvas id="canvasRiego"></canvas>
       <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center; border-top: 2px solid #d5e2ec; padding-top: 0.5rem;">
         <button class="btn btn-sm btn-outline" id="btnZoomIn">➕ Zoom</button>
         <button class="btn btn-sm btn-outline" id="btnZoomOut">➖ Zoom</button>
-        <button class="btn btn-sm btn-outline" id="btnRedibujar">🔄 Forzar redibujo</button>
+        <button class="btn btn-sm btn-outline" id="btnZoomReset">🎯 Reset</button>
         <button class="btn btn-sm btn-outline" id="btnExportarReporte">📄 Reporte</button>
         <span style="font-size:clamp(0.6rem,0.9vw,0.75rem); color:#1f4b62; margin-left:auto;">Toca o arrastra para explorar</span>
       </div>
@@ -356,14 +280,14 @@
   </div>
   <div class="footer">
     <span>⚠️ Simulación técnica · presiones y uniformidad aproximadas</span>
-    <span>🧪 laterales visibles con línea gruesa</span>
+    <span>🧪 laterales visibles con estilo de tubería</span>
   </div>
 </div>
+
 <script>
   (function() {
     'use strict';
-
-    console.log('WinSIP 3 iniciado.');
+    console.log('WinSIP 3 v4.0 iniciado.');
 
     const state = {
       field: { largo: 800, ancho: 342, patron: 'cuadrado', separacion: 33.5, radio: 20.5, seplateral: 33.5, margenX: 20, margenY: 20 },
@@ -375,7 +299,6 @@
         { id: 'Nelson-40', q: 3.2, presion: 3.5, radio: 14 }
       ],
       zoom: 1,
-      unidadCaudal: 'm3h',
       modoDiseno: false
     };
 
@@ -385,11 +308,24 @@
     const app = document.getElementById('app');
     const btnToggle = document.getElementById('btnToggleDiseno');
 
+    // Ajustar canvas a alta resolución (Retina/Móvil)
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      // Guardamos las dimensiones lógicas para los cálculos
+      canvas.logicalWidth = rect.width;
+      canvas.logicalHeight = rect.height;
+      dibujarCampo();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
     function mostrarMensaje(texto, tipo) {
       mensajeEl.textContent = texto;
       mensajeEl.style.display = 'block';
       mensajeEl.className = tipo || '';
-      console.log('[Mensaje]', texto);
     }
     function ocultarMensaje() { mensajeEl.style.display = 'none'; }
     function mostrarCaudal(valorM3h) { return valorM3h.toFixed(2) + ' m³/h'; }
@@ -407,10 +343,11 @@
     }
 
     function dibujarCampo() {
-      console.log('Dibujando campo...');
       const f = getFieldParams();
-      const w = canvas.width, h = canvas.height;
+      const w = canvas.logicalWidth || canvas.width;
+      const h = canvas.logicalHeight || canvas.height;
       const margin = 40;
+      
       const scaleX = (w - 2 * margin) / f.largo;
       const scaleY = (h - 2 * margin) / f.ancho;
       const scale = Math.min(scaleX, scaleY) * state.zoom;
@@ -418,16 +355,17 @@
       const offsetY = (h - f.ancho * scale) / 2;
 
       ctx.clearRect(0, 0, w, h);
+      
+      // Fondo
       const grad = ctx.createLinearGradient(0,0,0,h);
-      grad.addColorStop(0, '#f0f8f0');
-      grad.addColorStop(1, '#e2efe2');
+      grad.addColorStop(0, '#f4f9f4');
+      grad.addColorStop(1, '#e8f5e8');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
 
-      ctx.shadowColor = 'rgba(0,0,0,0.10)';
-      ctx.shadowBlur = 14;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
+      // Borde del campo
+      ctx.shadowColor = 'rgba(0,0,0,0.15)';
+      ctx.shadowBlur = 10;
       ctx.strokeStyle = '#1f4f2f';
       ctx.lineWidth = 4;
       ctx.strokeRect(offsetX, offsetY, f.largo * scale, f.ancho * scale);
@@ -438,155 +376,212 @@
       const anchoUtil = (f.largo - 2*f.margenX) * scale;
       const altoUtil = (f.ancho - 2*f.margenY) * scale;
 
-      if (f.margenX > 0) {
-        ctx.strokeStyle = '#2980b9'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
-        ctx.strokeRect(offsetX + margenXPx, offsetY, anchoUtil, f.ancho * scale);
-        ctx.setLineDash([]);
-      }
-      if (f.margenY > 0) {
-        ctx.strokeStyle = '#27ae60'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
-        ctx.strokeRect(offsetX, offsetY + margenYPx, f.largo * scale, altoUtil);
-        ctx.setLineDash([]);
-      }
-      if (f.margenX > 0 || f.margenY > 0) {
-        ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 2; ctx.setLineDash([4,5]);
-        ctx.strokeRect(inicioX, inicioY, anchoUtil, altoUtil);
-        ctx.setLineDash([]);
-      }
+      // Área útil con relleno sutil
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.fillRect(inicioX, inicioY, anchoUtil, altoUtil);
 
-      ctx.strokeStyle = '#b0cfc0'; ctx.lineWidth = 1.2;
-      for (let i = 0; i <= f.largo; i += 5) {
+      // Rejilla Inteligente (se adapta al zoom)
+      let pasoRejilla = 50;
+      if (scale > 2.0) pasoRejilla = 10;
+      else if (scale > 0.8) pasoRejilla = 25;
+
+      ctx.strokeStyle = 'rgba(176, 207, 192, 0.6)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= f.largo; i += pasoRejilla) {
         const x = offsetX + i * scale;
         if (x >= inicioX && x <= inicioX + anchoUtil) {
           ctx.beginPath(); ctx.moveTo(x, inicioY); ctx.lineTo(x, inicioY + altoUtil); ctx.stroke();
         }
       }
-      for (let i = 0; i <= f.ancho; i += 5) {
+      for (let i = 0; i <= f.ancho; i += pasoRejilla) {
         const y = offsetY + i * scale;
         if (y >= inicioY && y <= inicioY + altoUtil) {
           ctx.beginPath(); ctx.moveTo(inicioX, y); ctx.lineTo(inicioX + anchoUtil, y); ctx.stroke();
         }
       }
 
-      state.laterales.forEach(l => {
+      // Laterales (Estilo Tubería)
+      state.laterales.forEach((l, idx) => {
         const x = offsetX + l.x * scale;
         if (x >= inicioX && x <= inicioX + anchoUtil) {
+          // Sombra de la tubería
+          ctx.beginPath();
+          ctx.moveTo(x + 2, inicioY + 2);
+          ctx.lineTo(x + 2, inicioY + altoUtil + 2);
+          ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+          ctx.lineWidth = 6;
+          ctx.stroke();
+          
+          // Tubería principal
           ctx.beginPath();
           ctx.moveTo(x, inicioY);
           ctx.lineTo(x, inicioY + altoUtil);
-          ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 4; ctx.setLineDash([6,4]);
-          ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0,0,0,0.15)';
+          ctx.strokeStyle = '#2c3e50';
+          ctx.lineWidth = 5;
+          ctx.lineCap = 'round';
           ctx.stroke();
-          ctx.setLineDash([]); ctx.shadowBlur = 0;
-          ctx.fillStyle = '#d35400'; ctx.font = 'bold 12px sans-serif';
-          ctx.fillText('⬅ Lateral', x - 24, inicioY - 12);
+          
+          // Brillo de la tubería
+          ctx.beginPath();
+          ctx.moveTo(x - 1, inicioY);
+          ctx.lineTo(x - 1, inicioY + altoUtil);
+          ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          // Etiqueta del lateral
+          ctx.fillStyle = '#2c3e50';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(`L${idx + 1}`, x, inicioY - 8);
         }
       });
 
-      const aspersores = state.aspersores, radio = f.radio, diametro = 2 * radio;
-      let contadorSolapes = 0, n = aspersores.length;
-      for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-          const a1 = aspersores[i], a2 = aspersores[j];
-          const dx = a2.x - a1.x, dy = a2.y - a1.y, dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < diametro && dist > 0.1) {
-            contadorSolapes++;
-            const x1 = offsetX + a1.x * scale, y1 = offsetY + a1.y * scale;
-            const x2 = offsetX + a2.x * scale, y2 = offsetY + a2.y * scale;
-            ctx.beginPath();
-            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
-            ctx.strokeStyle = 'rgba(46, 204, 113, 0.9)'; ctx.lineWidth = 3; ctx.setLineDash([4,4]);
-            ctx.stroke(); ctx.setLineDash([]);
+      const aspersores = state.aspersores;
+      const radio = f.radio;
+      const diametro = 2 * radio;
+      const mostrarSolapes = document.getElementById('chkMostrarSolapes').checked;
+      let contadorSolapes = 0;
+
+      // 1. Dibujar círculos de radio (semitransparentes para que el solape se vea naturalmente más oscuro)
+      ctx.fillStyle = 'rgba(31, 122, 158, 0.15)';
+      ctx.strokeStyle = 'rgba(31, 122, 158, 0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      
+      aspersores.forEach(a => {
+        const x = offsetX + a.x * scale;
+        const y = offsetY + a.y * scale;
+        if (x < inicioX || x > inicioX + anchoUtil || y < inicioY || y > inicioY + altoUtil) return;
+        
+        const radioPx = radio * scale;
+        ctx.beginPath();
+        ctx.arc(x, y, radioPx, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // 2. Dibujar líneas de solape (SOLO si está activado y el zoom es suficiente para no saturar)
+      if (mostrarSolapes && scale > 0.4) {
+        ctx.strokeStyle = 'rgba(46, 204, 113, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3, 3]);
+        let n = aspersores.length;
+        // Limitamos a 2000 líneas máximas para evitar congelar el navegador en campos gigantes
+        let lineasDibujadas = 0;
+        const maxLineas = 2000;
+        
+        for (let i = 0; i < n && lineasDibujadas < maxLineas; i++) {
+          for (let j = i + 1; j < n && lineasDibujadas < maxLineas; j++) {
+            const a1 = aspersores[i], a2 = aspersores[j];
+            const dx = a2.x - a1.x, dy = a2.y - a1.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < diametro && dist > 0.1) {
+              contadorSolapes++;
+              ctx.beginPath();
+              ctx.moveTo(offsetX + a1.x * scale, offsetY + a1.y * scale);
+              ctx.lineTo(offsetX + a2.x * scale, offsetY + a2.y * scale);
+              ctx.stroke();
+              lineasDibujadas++;
+            }
           }
         }
+        ctx.setLineDash([]);
       }
 
+      // 3. Dibujar puntos de los aspersores (encima de todo)
       aspersores.forEach(a => {
-        const x = offsetX + a.x * scale, y = offsetY + a.y * scale;
+        const x = offsetX + a.x * scale;
+        const y = offsetY + a.y * scale;
         if (x < inicioX || x > inicioX + anchoUtil || y < inicioY || y > inicioY + altoUtil) return;
-        const radioPx = radio * scale;
-        ctx.beginPath(); ctx.arc(x, y, radioPx, 0, 2 * Math.PI);
-        ctx.fillStyle = 'rgba(31, 122, 158, 0.20)'; ctx.fill();
-        ctx.strokeStyle = 'rgba(31, 122, 158, 0.7)'; ctx.lineWidth = 2.5; ctx.setLineDash([4,6]);
-        ctx.stroke(); ctx.setLineDash([]);
-        ctx.shadowBlur = 12; ctx.shadowColor = 'rgba(0,0,0,0.15)';
-        ctx.beginPath(); ctx.arc(x, y, 7, 0, 2 * Math.PI);
-        ctx.fillStyle = '#0b4f6c'; ctx.fill();
-        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8; ctx.stroke();
+        
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = 'rgba(0,0,0,0.3)';
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = '#0b4f6c';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
         ctx.shadowBlur = 0;
       });
 
-      ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'left';
-      ctx.fillText(`Solapes: ${contadorSolapes}`, 15, 30);
-      ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.font = '12px sans-serif';
-      ctx.fillText(`Aspersores: ${n}`, 15, 52);
-      ctx.fillText(`Radio: ${radio} m`, 15, 72);
-      ctx.fillText(`Sep: ${f.separacion} m`, 15, 92);
-      ctx.fillText(`Laterales: ${state.laterales.length}`, 15, 112);
+      // 4. Leyenda y Escala
+      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(`Aspersores: ${aspersores.length}`, 15, 25);
+      ctx.fillText(`Laterales: ${state.laterales.length}`, 15, 45);
+      if (mostrarSolapes) ctx.fillText(`Solapes detectados: ${contadorSolapes}`, 15, 65);
+
+      // Barra de escala
+      const metrosEscala = 50;
+      const pxEscala = metrosEscala * scale;
+      if (pxEscala < w - 40) {
+        const ex = w - 20 - pxEscala;
+        const ey = h - 30;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(ex, ey, pxEscala, 4);
+        ctx.fillRect(ex, ey - 4, 2, 12);
+        ctx.fillRect(ex + pxEscala, ey - 4, 2, 12);
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${metrosEscala} m`, ex + pxEscala/2, ey - 8);
+      }
 
       ocultarMensaje();
-      console.log('Dibujo completado.');
     }
 
     function generarAspersores() {
-      console.log('Generando aspersores...');
-      const f = getFieldParams();
-      const numLaterales = parseInt(document.getElementById('numLaterales').value) || 3;
-      const largoUtil = f.largo - 2 * f.margenX;
-      const anchoUtil = f.ancho - 2 * f.margenY;
+      mostrarMensaje('⏳ Generando diseño...', 'info');
+      setTimeout(() => {
+        const f = getFieldParams();
+        const numLaterales = parseInt(document.getElementById('numLaterales').value) || 3;
+        const largoUtil = f.largo - 2 * f.margenX;
+        const anchoUtil = f.ancho - 2 * f.margenY;
 
-      if (largoUtil <= 0 || anchoUtil <= 0) {
-        mostrarMensaje('⚠️ Los márgenes son mayores que las dimensiones del campo.', 'error');
-        state.aspersores = []; state.laterales = [];
-        dibujarCampo(); actualizarEstadisticas();
-        return;
-      }
-      if (f.separacion <= 0 || f.radio <= 0) {
-        mostrarMensaje('⚠️ Separación y radio deben ser > 0.', 'error');
-        state.aspersores = []; state.laterales = [];
-        dibujarCampo(); actualizarEstadisticas();
-        return;
-      }
-
-      const laterales = [];
-      for (let i = 0; i < numLaterales; i++) {
-        const x = f.margenX + (i + 0.5) * largoUtil / numLaterales;
-        laterales.push({ x });
-      }
-      state.laterales = laterales;
-
-      const sel = document.getElementById('catalogoEquipos');
-      const equipoId = sel.value;
-      let equipo = state.equipos.find(e => e.id === equipoId);
-      if (!equipo) equipo = state.equipos[0];
-      const q = equipo ? equipo.q : 2.5;
-      const presion = equipo ? equipo.presion : 3.0;
-      const radio = f.radio;
-
-      const sep = f.separacion, patron = f.patron;
-      let dx = sep, dy = sep;
-      if (patron === 'rectangular' || patron === 'cuadrado') { dx = sep; dy = sep; }
-      else if (patron === 'triangular') { dx = sep * 0.866; dy = sep * 0.75; }
-
-      const aspersores = [];
-      laterales.forEach(lateral => {
-        let y = f.margenY + dy / 2;
-        let offsetX = lateral.x;
-        while (y < f.margenY + anchoUtil) {
-          let x = offsetX + (patron === 'triangular' && (Math.floor((y - f.margenY) / dy) % 2 === 1) ? dx / 2 : 0);
-          if (x < f.margenX) x = f.margenX;
-          if (x > f.margenX + largoUtil) x = f.margenX + largoUtil;
-          aspersores.push({ x, y, radio, q, presion });
-          y += dy;
+        if (largoUtil <= 0 || anchoUtil <= 0) {
+          mostrarMensaje('⚠️ Márgenes mayores que el campo.', 'error');
+          state.aspersores = []; state.laterales = [];
+          dibujarCampo(); actualizarEstadisticas();
+          return;
         }
-      });
 
-      state.aspersores = aspersores;
-      console.log(`Generados ${aspersores.length} aspersores.`);
-      ocultarMensaje();
-      dibujarCampo();
-      actualizarEstadisticas();
-      calcularHidraulica();
+        const laterales = [];
+        for (let i = 0; i < numLaterales; i++) {
+          const x = f.margenX + (i + 0.5) * largoUtil / numLaterales;
+          laterales.push({ x });
+        }
+        state.laterales = laterales;
+
+        const sel = document.getElementById('catalogoEquipos');
+        const equipo = state.equipos.find(e => e.id === sel.value) || state.equipos[0];
+        
+        const sep = f.separacion, patron = f.patron;
+        let dx = sep, dy = sep;
+        if (patron === 'triangular') { dx = sep * 0.866; dy = sep * 0.75; }
+
+        const aspersores = [];
+        laterales.forEach(lateral => {
+          let y = f.margenY + dy / 2;
+          while (y < f.margenY + anchoUtil) {
+            let x = lateral.x + (patron === 'triangular' && (Math.floor((y - f.margenY) / dy) % 2 === 1) ? dx / 2 : 0);
+            if (x < f.margenX) x = f.margenX;
+            if (x > f.margenX + largoUtil) x = f.margenX + largoUtil;
+            aspersores.push({ x, y, radio: f.radio, q: equipo.q, presion: equipo.presion });
+            y += dy;
+          }
+        });
+
+        state.aspersores = aspersores;
+        dibujarCampo();
+        actualizarEstadisticas();
+        calcularHidraulica();
+        ocultarMensaje();
+      }, 100);
     }
 
     function actualizarEstadisticas() {
@@ -600,8 +595,8 @@
       const f = getFieldParams();
       const sep = f.separacion, radio = f.radio;
       const cobertura = Math.min(100, Math.round((radio * 2 / sep) * 50 + 30));
-      const cu = Math.min(92, Math.round(70 + (radio / sep) * 15));
-      const du = Math.min(88, Math.round(60 + (radio / sep) * 12));
+      const cu = Math.min(95, Math.round(70 + (radio / sep) * 15));
+      const du = Math.min(90, Math.round(60 + (radio / sep) * 12));
       document.getElementById('cuValor').innerText = cu;
       document.getElementById('duValor').innerText = du;
       document.getElementById('coberturaValor').innerText = cobertura + '%';
@@ -615,17 +610,16 @@
       const Qms = qTotal / 3600, Dm = diam / 1000;
       let hf = 0;
       if (Qms > 0 && Dm > 0) hf = 10.67 * Math.pow(Qms / chw, 1.852) * long / Math.pow(Dm, 4.87);
+      
       const sel = document.getElementById('catalogoEquipos');
-      const equipoId = sel.value;
-      let equipo = state.equipos.find(e => e.id === equipoId);
-      if (!equipo) equipo = state.equipos[0];
-      const pBase = equipo ? equipo.presion : 3.0;
-      const pDinamica = pBase - hf * 0.1;
+      const equipo = state.equipos.find(e => e.id === sel.value) || state.equipos[0];
+      const pDinamica = equipo.presion - (hf * 0.1);
+      
       document.getElementById('resultadoHidraulica').innerHTML = `
         <div><strong>Caudal total:</strong> ${mostrarCaudal(qTotal)}</div>
-        <div><strong>Pérdida fricción:</strong> ${hf.toFixed(3)} m.c.a.</div>
-        <div><strong>Presión dinámica estimada:</strong> ${Math.max(0.5, pDinamica).toFixed(2)} bar</div>
-        <div style="color:#1f5f4a;">${pDinamica>1.8 ? '✅ Rango aceptable' : '⚠️ Presión baja'}</div>
+        <div><strong>Pérdida fricción:</strong> ${hf.toFixed(2)} m.c.a.</div>
+        <div><strong>Presión dinámica:</strong> ${Math.max(0.5, pDinamica).toFixed(2)} bar</div>
+        <div style="color:#1f5f4a; font-weight:bold;">${pDinamica > 1.8 ? '✅ Rango aceptable' : '⚠️ Presión baja'}</div>
       `;
     }
 
@@ -638,53 +632,47 @@
       const f = getFieldParams();
       const areaUtil = Math.max(1, (f.largo - 2*f.margenX) * (f.ancho - 2*f.margenY));
       const laminaAplicada = (qTotal * (tiempo / 60)) / areaUtil * 1000;
+      
       document.getElementById('resultadoProgramacion').innerHTML = `
         <div><strong>Lámina neta:</strong> ${laminaNeta.toFixed(1)} mm</div>
-        <div><strong>Eficiencia:</strong> ${eficiencia}% → Lámina bruta: ${laminaBruta.toFixed(1)} mm</div>
-        <div><strong>Tiempo riego:</strong> ${tiempo} min</div>
-        <div><strong>Lámina aplicada estimada:</strong> ${laminaAplicada.toFixed(2)} mm</div>
-        <div>${laminaAplicada >= laminaNeta ? '✅ Suficiente' : '⚠️ Déficit'}</div>
+        <div><strong>Lámina bruta requerida:</strong> ${laminaBruta.toFixed(1)} mm</div>
+        <div><strong>Lámina aplicada (${tiempo} min):</strong> ${laminaAplicada.toFixed(2)} mm</div>
+        <div style="font-weight:bold; color: ${laminaAplicada >= laminaNeta ? '#1f5f4a' : '#c0392b'}">
+          ${laminaAplicada >= laminaNeta ? '✅ Riego Suficiente' : '⚠️ Déficit de riego'}
+        </div>
       `;
     }
 
     function generarReporte() {
       const f = getFieldParams();
-      let txt = '=== REPORTE DE DISEÑO ===\n';
-      txt += `Campo: ${f.largo}x${f.ancho} m, patrón ${f.patron}\n`;
-      txt += `Margen X: ${f.margenX} m, Margen Y: ${f.margenY} m\n`;
+      let txt = '=== REPORTE WinSIP 3 ===\n';
+      txt += `Campo: ${f.largo} x ${f.ancho} m | Patrón: ${f.patron}\n`;
       txt += `Área útil: ${(f.largo-2*f.margenX)*(f.ancho-2*f.margenY)} m²\n`;
-      txt += `Aspersores: ${state.aspersores.length}\n`;
-      txt += `Radio: ${f.radio} m (diámetro ${f.radio*2} m)\n`;
-      txt += `Laterales: ${state.laterales.length}\n`;
-      txt += `Uniformidad: CU=${document.getElementById('cuValor').innerText}% DU=${document.getElementById('duValor').innerText}%\n`;
-      txt += '--- Datos de aspersores ---\n';
-      state.aspersores.forEach((a, i) => {
-        txt += `Asp ${i+1}: Q=${mostrarCaudal(a.q||2.5)}, P=${(a.presion||3.0).toFixed(1)} bar, R=${a.radio}m\n`;
-      });
-      alert(txt + '\n(Reporte completo en consola)');
-      console.log(txt);
+      txt += `Aspersores: ${state.aspersores.length} | Laterales: ${state.laterales.length}\n`;
+      txt += `Radio: ${f.radio} m | Sep: ${f.separacion} m\n`;
+      txt += `Uniformidad: CU=${document.getElementById('cuValor').innerText}% | DU=${document.getElementById('duValor').innerText}%\n`;
+      alert(txt + '\n(Revisa la consola para el detalle de cada aspersor)');
+      console.log("DETALLE ASPERSORES:", state.aspersores);
     }
 
-    // ---- TOGGLE MODO DISEÑO ----
     function toggleModoDiseno() {
       state.modoDiseno = !state.modoDiseno;
       if (state.modoDiseno) {
         app.classList.add('diseno-completo');
-        btnToggle.textContent = '🔲 Ver diseño completo'; // el pseudo-elemento añade " ✖ Cerrar"
-        // Forzamos redibujo después de la transición
-        setTimeout(dibujarCampo, 200);
+        btnToggle.textContent = '✖ Cerrar diseño';
+        btnToggle.classList.add('activo');
       } else {
         app.classList.remove('diseno-completo');
         btnToggle.textContent = '🔲 Ver diseño completo';
-        setTimeout(dibujarCampo, 200);
+        btnToggle.classList.remove('activo');
       }
+      setTimeout(() => { resizeCanvas(); }, 350);
     }
 
-    // ---- eventos ----
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('DOM cargado.');
+      // Inicializar canvas
+      setTimeout(resizeCanvas, 100);
 
-      // Tabs
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -694,31 +682,18 @@
         });
       });
 
-      // Botón Generar diseño
       document.getElementById('btnGenerarDiseno').addEventListener('click', generarAspersores);
-
-      // Botón flotante
       document.getElementById('btnToggleDiseno').addEventListener('click', toggleModoDiseno);
-
-      // Resto de botones
-      document.getElementById('btnRedibujar').addEventListener('click', function() {
-        dibujarCampo();
-        mostrarMensaje('🔄 Redibujado manual', 'info');
-        setTimeout(ocultarMensaje, 1500);
-      });
+      document.getElementById('chkMostrarSolapes').addEventListener('change', dibujarCampo);
+      
+      document.getElementById('btnZoomIn').addEventListener('click', () => { state.zoom = Math.min(4, state.zoom * 1.3); dibujarCampo(); });
+      document.getElementById('btnZoomOut').addEventListener('click', () => { state.zoom = Math.max(0.2, state.zoom / 1.3); dibujarCampo(); });
+      document.getElementById('btnZoomReset').addEventListener('click', () => { state.zoom = 1; dibujarCampo(); });
+      
       document.getElementById('btnCalcularHidraulica').addEventListener('click', calcularHidraulica);
-      document.getElementById('btnCalcularUniformidad').addEventListener('click', function() {
-        actualizarEstadisticas(); dibujarCampo();
-      });
+      document.getElementById('btnCalcularUniformidad').addEventListener('click', () => { actualizarEstadisticas(); dibujarCampo(); });
       document.getElementById('btnCalcularProgramacion').addEventListener('click', calcularProgramacion);
       document.getElementById('btnExportarReporte').addEventListener('click', generarReporte);
-
-      document.getElementById('btnZoomIn').addEventListener('click', function() {
-        state.zoom = Math.min(2, state.zoom * 1.2); dibujarCampo();
-      });
-      document.getElementById('btnZoomOut').addEventListener('click', function() {
-        state.zoom = Math.max(0.5, state.zoom / 1.2); dibujarCampo();
-      });
 
       document.getElementById('btnAgregarEquipo').addEventListener('click', function() {
         const q = parseFloat(document.getElementById('eqCaudal').value) || 2.5;
@@ -727,15 +702,15 @@
         if (q <= 0 || p <= 0 || r <= 0) { alert('Valores deben ser > 0.'); return; }
         const id = `Custom-${Date.now()}`;
         state.equipos.push({ id, q, presion: p, radio: r });
-        alert(`Equipo agregado: Q=${mostrarCaudal(q)}, P=${p} bar, R=${r}m`);
         const sel = document.getElementById('catalogoEquipos');
         const opt = document.createElement('option');
-        opt.value = id; opt.text = `Custom · Q=${mostrarCaudal(q)} · P=${p} · R=${r}`;
+        opt.value = id; opt.text = `Custom · Q=${q} · P=${p} · R=${r}`;
         sel.appendChild(opt); sel.value = id;
+        alert('✅ Equipo agregado al catálogo');
       });
 
       mostrarMensaje('⏳ Generando diseño inicial...', 'info');
-      setTimeout(() => { generarAspersores(); }, 300);
+      setTimeout(generarAspersores, 500);
     });
   })();
 </script>
